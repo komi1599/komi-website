@@ -627,8 +627,8 @@
           <img src="./assets/album-art.jpg" style="width:100%; height:100%; object-fit:cover; display:block;">
         </div>
         <div style="width:100%; text-align:center;">
-          <div style="font-weight:700; font-size:15px; letter-spacing:0.02em;">jaydes</div>
-          <div style="font-size:12px; color:#888; margin-top:2px;">migraine</div>
+          <div id="komi-artist" style="font-weight:700; font-size:15px; letter-spacing:0.02em;">jaydes</div>
+          <div id="komi-title" style="font-size:12px; color:#888; margin-top:2px;">migraine</div>
         </div>
         <audio id="custom-audio" src="./assets/migraine.mp3" preload="metadata" autoplay style="display:none;"></audio>
         <div style="width:100%; display:flex; align-items:center; gap:10px;">
@@ -642,6 +642,7 @@
             <svg id="audio-mute-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
           </button>
           <input id="audio-volume" type="range" min="0" max="1" step="0.05" value="0.3" style="width:60px; accent-color:#fff; height:4px;">
+          <button id="audio-switch" style="background:none; border:none; color:#888; cursor:pointer; padding:2px; display:flex; align-items:center; justify-content:center; font-size:16px;" title="switch track">↻</button>
         </div>
       </div>
     </div>
@@ -1162,6 +1163,11 @@
       const volIcon = document.getElementById('audio-vol-icon');
       const muteIcon = document.getElementById('audio-mute-icon');
       const volumeSlider = document.getElementById('audio-volume');
+      const komiTracks = [
+        { src: './assets/migraine.mp3', artist: 'jaydes', title: 'migraine' },
+        { src: './assets/sometimes.mp3', artist: 'unknown', title: 'sometimes' }
+      ];
+      let komiTrackIdx = 0;
       
       playBtn.onclick = () => {
         if (audio.paused) { audio.play(); }
@@ -1193,6 +1199,14 @@
       volumeSlider.oninput = (e) => {
         audio.volume = e.target.value;
         audio.muted = false;
+      };
+      document.getElementById('audio-switch').onclick = () => {
+        komiTrackIdx = (komiTrackIdx + 1) % komiTracks.length;
+        const t = komiTracks[komiTrackIdx];
+        audio.src = t.src;
+        document.getElementById('komi-artist').textContent = t.artist;
+        document.getElementById('komi-title').textContent = t.title;
+        audio.play().catch(() => {});
       };
       
       document.getElementById('loop').onclick = toggleLoop;
