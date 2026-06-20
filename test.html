@@ -777,7 +777,7 @@
         </a>
       </div>
     </div>
-    <div id="spotify-window" class="window" style="left: 50%; top: 10px; transform: translateX(-50%); background: #000; width: 280px;">
+    <div id="spotify-window" class="window" style="left: 50%; top: 10px; background: #000; width: 280px;">
       <div class="window-header" id="spotify-drag">
         <span>mp3 player</span>
         <div style="display:flex; align-items:center; gap:2px;">
@@ -1202,6 +1202,7 @@
     function centerElement(el) {
       el.style.right = 'auto';
       el.style.bottom = 'auto';
+      el.style.transform = 'none';
       const rect = el.getBoundingClientRect();
       const left = Math.max(8, Math.round((window.innerWidth - rect.width) / 2));
       const top = Math.max(8, Math.round((window.innerHeight - rect.height) / 2));
@@ -1345,6 +1346,7 @@
       function openSpotifyWindow() {
         const win = document.getElementById('spotify-window');
         win.style.display = 'block';
+        centerElement(win);
         requestAnimationFrame(() => win.classList.add('visible'));
       }
 
