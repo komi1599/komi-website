@@ -100,10 +100,10 @@
       object-fit: contain;
       background: rgba(255,255,255,0.06);
     }
-    .icon img[src*="avatar1"] {
-      background: #0a0a0a;
+    .icon-about img {
+      background: #0a0a0a !important;
       border: 1px solid rgba(255,255,255,0.08);
-      filter: grayscale(1) contrast(1.1) brightness(0.85);
+      filter: grayscale(1) contrast(1.1) brightness(0.7);
     }
     .icon span {
       font-size: 13px;
@@ -862,6 +862,7 @@
         img.src = icon.img;
         span.textContent = icon.label;
         const wrap = node.querySelector('.icon');
+        wrap.classList.add('icon-' + icon.type);
         if (icon.type === 'notepad') wrap.onclick = toggleNotepad;
         else if (icon.type === 'terminal') wrap.onclick = toggleTerminal;
         else if (icon.type === 'music') wrap.onclick = toggleMusicPlayer;
