@@ -1254,7 +1254,7 @@
           setTimeout(() => ctx.close(), 100);
         } catch (e) {}
       }
-      out.addEventListener('keydown', () => { if (Math.random() > 0.7) typeBeep(); });
+      document.getElementById('terminal-output').addEventListener('keydown', () => { if (Math.random() > 0.7) typeBeep(); });
 
       // BOOT SEQUENCE
       (function bootSequence() {
