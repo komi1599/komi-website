@@ -591,9 +591,89 @@
       width: 14px; height: 14px; color: #444;
       flex-shrink: 0;
     }
+    #boot-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #000;
+      font-family: 'Courier New', Courier, monospace;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 40px;
+      box-sizing: border-box;
+      overflow: hidden;
+      opacity: 1;
+      transition: opacity 0.9s ease-out;
+    }
+    #boot-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #boot-screen .boot-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    #boot-screen .boot-header {
+      font-size: 13px;
+      color: #fff;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+    #boot-screen .boot-line {
+      font-size: 12px;
+      color: #aaa;
+      line-height: 1.4;
+      min-height: 1.4em;
+      white-space: pre-wrap;
+    }
+    #boot-screen .boot-progress {
+      width: 200px;
+      max-width: 100%;
+      height: 2px;
+      background: #222;
+      margin: 6px 0;
+      position: relative;
+    }
+    #boot-screen .boot-progress-inner {
+      height: 100%;
+      background: #fff;
+      width: 0%;
+      transition: width 0.05s linear;
+    }
+    #boot-screen .boot-hex {
+      display: none;
+    }
+    #boot-screen .boot-cursor {
+      display: inline-block;
+      width: 7px;
+      height: 12px;
+      background: #fff;
+      animation: bootBlink 0.6s step-end infinite;
+      vertical-align: middle;
+      margin-left: 2px;
+    }
+    @keyframes bootBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
   </style>
 </head>
 <body>
+  <div id="boot-screen">
+    <div class="boot-content">
+      <div class="boot-header">komiOS</div>
+      <div id="boot-logs"></div>
+      <div class="boot-progress" id="boot-progress" style="display:none;">
+        <div class="boot-progress-inner" id="boot-progress-inner"></div>
+      </div>
+      <div class="boot-hex" id="boot-hex"></div>
+    </div>
+  </div>
   <img id="wallpaper" src="./assets/wallpaper/DCA3UhDIVf.jpg">
   <canvas id="snow-canvas"></canvas>
   <div class="desktop">
@@ -1202,11 +1282,11 @@
       document.getElementById('about-close').onclick = toggleAbout;
       document.getElementById('about-min').onclick = () => minimizeWindow('about-window');
 
-      setTimeout(() => {
+      function openSpotifyWindow() {
         const win = document.getElementById('spotify-window');
         win.style.display = 'block';
         requestAnimationFrame(() => win.classList.add('visible'));
-      }, 500);
+      }
 
       // Black snow effect
       (function() {
@@ -1470,6 +1550,94 @@ opsec is already the newest version (99.9).
           if (span) span.textContent = currentInput;
         }
       });
+
+      (function bootSequence() {
+        const logs = document.getElementById('boot-logs');
+        const progress = document.getElementById('boot-progress');
+        const progressInner = document.getElementById('boot-progress-inner');
+        const screen = document.getElementById('boot-screen');
+
+        const bootMessages = [
+          { text: 'komiOS v1.0', delay: 150, speed: 22 },
+          { text: 'loading...', delay: 120, speed: 28 },
+          { text: '', delay: 80, speed: 0, showProgress: true },
+        ];
+
+        let i = 0;
+        let cursorEl = null;
+
+        function typeLine(msg, cb) {
+          const div = document.createElement('div');
+          div.className = 'boot-line';
+          logs.appendChild(div);
+          if (cursorEl) cursorEl.remove();
+          cursorEl = document.createElement('span');
+          cursorEl.className = 'boot-cursor';
+          div.appendChild(cursorEl);
+
+          let idx = 0;
+          const type = () => {
+            if (idx < msg.text.length) {
+              cursorEl.before(msg.text[idx]);
+              idx++;
+              setTimeout(type, msg.speed);
+            } else {
+              if (msg.showProgress) {
+                progress.style.display = 'block';
+                let pct = 0;
+                const bar = setInterval(() => {
+                  pct += Math.random() * 18 + 8;
+                  if (pct >= 100) {
+                    pct = 100;
+                    clearInterval(bar);
+                    setTimeout(() => {
+                      const done = document.createElement('div');
+                      done.className = 'boot-line';
+                      done.textContent = 'done.';
+                      logs.appendChild(done);
+                      setTimeout(finishBoot, 350);
+                    }, 200);
+                  }
+                  progressInner.style.width = pct + '%';
+                }, 45);
+              } else {
+                cb && cb();
+              }
+            }
+          };
+          type();
+        }
+
+        function next() {
+          if (i >= bootMessages.length) return;
+          const msg = bootMessages[i++];
+          setTimeout(() => {
+            if (msg.text === '') {
+              const div = document.createElement('div');
+              div.className = 'boot-line';
+              div.innerHTML = '&nbsp;';
+              logs.appendChild(div);
+              next();
+            } else {
+              typeLine(msg, next);
+            }
+          }, msg.delay);
+        }
+
+        function finishBoot() {
+          screen.classList.add('fade-out');
+          setTimeout(() => {
+            screen.style.display = 'none';
+            openSpotifyWindow();
+          }, 600);
+        }
+
+        screen.addEventListener('click', () => {
+          if (!screen.classList.contains('fade-out')) finishBoot();
+        });
+
+        setTimeout(next, 200);
+      })();
     });
 
     function updateClock() {
@@ -1656,8 +1824,6 @@ opsec is already the newest version (99.9).
         win.style.top = top + 'px';
       });
     });
-
-
 
     loadFromStorage();
     playMusic(0);
