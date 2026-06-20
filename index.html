@@ -552,6 +552,30 @@
       #music-controls #prev,
       #music-controls #next { filter: grayscale(1); }
     }
+    #about-window { width: 280px; }
+    #about-window .about-pic {
+      width: 64px; height: 64px; border-radius: 50%;
+      object-fit: cover; filter: grayscale(1) contrast(1.1);
+      border: 2px solid rgba(255,255,255,0.15);
+      margin-bottom: 10px;
+    }
+    #about-window .about-name {
+      font-size: 18px; font-weight: 700; color: #fff;
+      letter-spacing: 0.03em; margin-bottom: 4px;
+    }
+    #about-window .about-tag {
+      font-size: 11px; color: #888; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+    #about-window .about-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: #bbb; margin-bottom: 6px;
+    }
+    #about-window .about-row svg {
+      width: 14px; height: 14px; color: #666;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body>
@@ -681,6 +705,38 @@
         </button>
       </div>
     </div>
+    <div id="about-window" class="window" style="left: 300px; top: 220px; background: rgba(15,15,15,0.3); display:none;">
+      <div class="window-header" id="about-drag">
+        <span>about me</span>
+        <div style="display:flex; align-items:center; gap:2px;">
+          <button class="minimize-btn" id="about-min">─</button>
+          <button class="close-btn" id="about-close">✕</button>
+        </div>
+      </div>
+      <div class="window-body" style="padding:18px; display:flex; flex-direction:column; align-items:center; text-align:center;">
+        <img class="about-pic" src="./assets/avatar1.png" alt="avatar">
+        <div class="about-name">komi</div>
+        <div class="about-tag">developer / dreamer</div>
+        <div style="width:100%; text-align:left; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08);">
+          <div class="about-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>agartha</span>
+          </div>
+          <div class="about-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            <span>c++ lua html py</span>
+          </div>
+          <div class="about-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span>i love my girl &lt;3</span>
+          </div>
+          <div class="about-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm0-14a6 6 0 1 0 6 6 6 6 0 0 0-6-6zm0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4z" opacity="0"/></svg>
+            <span>14yo</span>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="profile-popup">
       <img class="pfp" src="" alt="pfp">
       <div class="name"></div>
@@ -724,6 +780,7 @@
       { img: "./assets/icons/KU2GZgmQXz.png", label: "mpv", type: "music" },
       { img: "./assets/bio-icon.png", label: "bio", type: "bio" },
       { img: "./assets/projects.png", label: "projects", type: "projects" },
+      { img: "./assets/avatar1.png", label: "about me", type: "about" },
       // spotify window auto-opens, no icon needed
     ];
     function ensureTask(taskId, label, iconPath) {
@@ -805,6 +862,7 @@
         else if (icon.type === 'music') wrap.onclick = toggleMusicPlayer;
         else if (icon.type === 'bio') wrap.onclick = toggleBio;
         else if (icon.type === 'projects') wrap.onclick = toggleProjects;
+        else if (icon.type === 'about') wrap.onclick = toggleAbout;
         // spotify has no icon
         iconsDiv.appendChild(node);
       });
@@ -1101,6 +1159,21 @@
         task.onclick = toggleSpotify;
       }
     }
+    function toggleAbout() {
+      const win = document.getElementById('about-window');
+      const isOpen = win.style.display === 'block';
+      if (isOpen) {
+        win.classList.remove('visible');
+        setTimeout(() => { win.style.display = 'none'; }, 180);
+        hideTask('task-about');
+      } else {
+        win.style.display = 'block';
+        centerElement(win);
+        requestAnimationFrame(() => win.classList.add('visible'));
+        const task = ensureTask('task-about', 'about me', './assets/avatar1.png');
+        task.onclick = toggleAbout;
+      }
+    }
     function bringToFront(element) {
       const windows = document.querySelectorAll('.window');
       windows.forEach(win => {
@@ -1127,6 +1200,7 @@
       makeDraggable(document.getElementById('music-drag'), document.getElementById('music-window'));
       makeDraggable(document.getElementById('bio-drag'), document.getElementById('bio-window'));
       makeDraggable(document.getElementById('projects-drag'), document.getElementById('projects-window'));
+      makeDraggable(document.getElementById('about-drag'), document.getElementById('about-window'));
       // Spotify window is non-draggable
       
       document.querySelectorAll('.window').forEach(window => {
@@ -1145,7 +1219,9 @@
       document.getElementById('projects-min').onclick = () => minimizeWindow('projects-window');
       document.getElementById('spotify-close').onclick = toggleSpotify;
       document.getElementById('spotify-min').onclick = () => minimizeWindow('spotify-window');
-      
+      document.getElementById('about-close').onclick = toggleAbout;
+      document.getElementById('about-min').onclick = () => minimizeWindow('about-window');
+
       setTimeout(() => {
         const win = document.getElementById('spotify-window');
         win.style.display = 'block';
