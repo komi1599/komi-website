@@ -24,6 +24,10 @@
       background: transparent;
       transition: background 1s cubic-bezier(.77,0,.18,1);
       text-transform: lowercase;
+      cursor: none;
+    }
+    * {
+      cursor: none !important;
     }
     #wallpaper {
       position: fixed;
@@ -590,9 +594,26 @@
       width: 14px; height: 14px; color: #444;
       flex-shrink: 0;
     }
+    #custom-cursor {
+      position: fixed;
+      top: 0; left: 0;
+      width: 48px;
+      height: 48px;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%, -50%);
+      display: none;
+    }
+    #custom-cursor img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
   </style>
 </head>
 <body>
+  <div id="custom-cursor"><img src="./assets/cursor.gif" alt=""></div>
   <img id="wallpaper" src="./assets/wallpaper/DCA3UhDIVf.jpg">
   <canvas id="snow-canvas"></canvas>
   <div class="desktop">
@@ -1730,6 +1751,19 @@ opsec is already the newest version (99.9).
       }
       step();
     })();
+
+    const customCursor = document.getElementById('custom-cursor');
+    let cursorVisible = false;
+    document.addEventListener('mousemove', (e) => {
+      if (customCursor) {
+        customCursor.style.left = e.clientX + 'px';
+        customCursor.style.top = e.clientY + 'px';
+        if (!cursorVisible) {
+          customCursor.style.display = 'block';
+          cursorVisible = true;
+        }
+      }
+    });
 
     loadFromStorage();
     playMusic(0);
