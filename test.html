@@ -577,6 +577,10 @@
     #about-window .about-name {
       font-size: 18px; font-weight: 700; color: #fff;
       letter-spacing: 0.03em; margin-bottom: 4px;
+      transition: text-shadow 0.08s;
+    }
+    #about-window .about-name.glitch-flash {
+      text-shadow: 0 0 8px rgba(255,255,255,0.6), 0 0 16px rgba(255,255,255,0.3);
     }
     #about-window .about-tag {
       font-size: 11px; color: #555; font-weight: 600;
@@ -1267,6 +1271,7 @@
         requestAnimationFrame(() => win.classList.add('visible'));
         const task = ensureTask('task-about', 'about me', './assets/avatar1.png');
         task.onclick = toggleAbout;
+        startGlitchName();
       }
     }
     function bringToFront(element) {
@@ -1672,23 +1677,26 @@ opsec is already the newest version (99.9).
         setTimeout(next, 200);
       })();
 
-      (function glitchName() {
-        const el = document.getElementById('about-name');
-        if (!el) return;
-        const full = 'komi';
-        const seq = ['komi', 'kom', 'ko', 'k'];
-        let idx = 0;
-        let delay = 180;
-        function step() {
-          el.textContent = seq[idx];
-          idx = (idx + 1) % seq.length;
-          delay = idx === 0 ? 900 : (idx === 1 ? 140 : (idx === 2 ? 120 : 100));
-          setTimeout(step, delay);
-        }
-        setTimeout(step, 1200);
-      })();
-
     });
+
+    let glitchTimer = null;
+    function startGlitchName() {
+      const el = document.getElementById('about-name');
+      if (!el) return;
+      if (glitchTimer) { clearTimeout(glitchTimer); glitchTimer = null; }
+      const seq = ['komi', 'kom', 'ko', 'k'];
+      let idx = 0;
+      function step() {
+        if (!el) return;
+        el.textContent = seq[idx];
+        el.classList.add('glitch-flash');
+        setTimeout(() => el.classList.remove('glitch-flash'), 80);
+        idx = (idx + 1) % seq.length;
+        const delay = idx === 0 ? 900 : (idx === 1 ? 160 : (idx === 2 ? 140 : 120));
+        glitchTimer = setTimeout(step, delay);
+      }
+      step();
+    }
 
     function updateClock() {
       const now = new Date();
