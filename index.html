@@ -1058,13 +1058,6 @@
         audio.play().catch(() => {});
       };
       
-      document.getElementById('loop').onclick = toggleLoop;
-      document.getElementById('play').onclick = togglePlay;
-      document.getElementById('prev').onclick = prevTrack;
-      document.getElementById('next').onclick = nextTrack;
-      document.getElementById('volume-btn').onclick = toggleMute;
-      document.getElementById('volume-slider').oninput = (e) => updateVolume(e.target.value);
-
       const out = document.getElementById('terminal-output');
       const promptUser = '7896789678';
       const promptHost = 'komi.lol';
