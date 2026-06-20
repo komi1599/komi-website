@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+goo<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -736,7 +736,7 @@
     const defaultIcons = [
       { img: "https://images.unsplash.com/photo-1623697899808-80f1a17372be?w=200&h=200&fit=crop&q=80&auto=format", label: "xed", type: "notepad" },
       { img: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=200&h=200&fit=crop&q=80&auto=format", label: "kitty", type: "terminal" },
-      { img: "https://images.unsplash.com/photo-1543940610-e7e6c111ea10?w=200&h=200&fit=crop&q=80&auto=format", label: "mp3 player", type: "spotify" },
+      { img: "./assets/icons/KU2GZgmQXz.png", label: "mp3", type: "spotify" },
       { img: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=200&h=200&fit=crop&q=80&auto=format", label: "projects", type: "projects" },
       { img: "./assets/avatar1.png", label: "about me", type: "about" },
     ];
@@ -977,13 +977,13 @@
         playClick('close');
         win.classList.remove('visible');
         setTimeout(() => { win.style.display = 'none'; }, 180);
-        hideTask('task-spotify');
+        hideTask('task-mp3');
       } else {
         playClick('open');
         win.style.display = 'block';
         centerElement(win);
         requestAnimationFrame(() => win.classList.add('visible'));
-        const task = ensureTask('task-spotify', 'spotify', './assets/spotify.png');
+        const task = ensureTask('task-mp3', 'mp3', './assets/icons/KU2GZgmQXz.png');
         task.onclick = toggleSpotify;
       }
     }
@@ -1047,13 +1047,6 @@
       document.getElementById('spotify-min').onclick = () => minimizeWindow('spotify-window');
       document.getElementById('about-close').onclick = toggleAbout;
       document.getElementById('about-min').onclick = () => minimizeWindow('about-window');
-
-      function openSpotifyWindow() {
-        const win = document.getElementById('spotify-window');
-        win.style.display = 'block';
-        centerElement(win);
-        requestAnimationFrame(() => win.classList.add('visible'));
-      }
 
       // Black snow effect
       (function() {
@@ -1393,7 +1386,6 @@ opsec is already the newest version (99.9).
           screen.classList.add('fade-out');
           setTimeout(() => {
             screen.style.display = 'none';
-            openSpotifyWindow();
           }, 600);
         }
 
