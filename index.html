@@ -981,17 +981,38 @@
       isPlaying = true;
       document.getElementById('play').innerHTML = '&#10073;&#10073;';
     };
+    function playClick(type) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        const now = ctx.currentTime;
+        if (type === 'open') {
+          osc.frequency.setValueAtTime(800, now);
+          osc.frequency.exponentialRampToValueAtTime(1200, now + 0.06);
+        } else {
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+        }
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+        osc.start(now);
+        osc.stop(now + 0.12);
+        setTimeout(() => ctx.close(), 200);
+      } catch (e) {}
+    }
     function toggleMusicPlayer() {
       const win = document.getElementById('music-window');
       if (!win) return;
-      
       const isOpen = win.style.display === 'block';
-      
       if (isOpen) {
+        playClick('close');
         win.classList.remove('visible');
         setTimeout(() => { win.style.display = 'none'; }, 180);
         hideTask('task-mpv');
-      const audio = document.getElementById('audio');
+        const audio = document.getElementById('audio');
         if (audio) {
           audio.pause();
           isPlaying = false;
@@ -999,6 +1020,7 @@
           if (playBtn) playBtn.innerHTML = '&#9654;';
         }
       } else {
+        playClick('open');
         win.style.display = 'block';
         centerElement(win);
         requestAnimationFrame(() => win.classList.add('visible'));
@@ -1078,10 +1100,12 @@
       const win = document.getElementById('notepad-window');
       const isOpen = win.style.display === 'block';
       if (isOpen) {
+        playClick('close');
         win.classList.remove('visible');
         setTimeout(() => { win.style.display = 'none'; }, 180);
         hideTask('task-xed');
       } else {
+        playClick('open');
         win.style.display = 'block';
         centerElement(win);
         requestAnimationFrame(() => win.classList.add('visible'));
@@ -1093,10 +1117,12 @@
       const win = document.getElementById('terminal-window');
       const wasOpen = win.style.display === 'block';
       if (wasOpen) {
+        playClick('close');
         win.classList.remove('visible');
         setTimeout(() => { win.style.display = 'none'; }, 180);
         hideTask('task-kitty');
       } else {
+        playClick('open');
         win.style.display = 'block';
         centerElement(win);
         const out = document.getElementById('terminal-output');
@@ -1110,10 +1136,12 @@
       const win = document.getElementById('projects-window');
       const isOpen = win.style.display === 'block';
       if (isOpen) {
+        playClick('close');
         win.classList.remove('visible');
         setTimeout(() => { win.style.display = 'none'; }, 180);
         hideTask('task-projects');
       } else {
+        playClick('open');
         win.style.display = 'block';
         centerElement(win);
         requestAnimationFrame(() => win.classList.add('visible'));
@@ -1125,10 +1153,12 @@
       const win = document.getElementById('spotify-window');
       const isOpen = win.style.display === 'block';
       if (isOpen) {
+        playClick('close');
         win.classList.remove('visible');
         setTimeout(() => { win.style.display = 'none'; }, 180);
         hideTask('task-spotify');
       } else {
+        playClick('open');
         win.style.display = 'block';
         centerElement(win);
         requestAnimationFrame(() => win.classList.add('visible'));
@@ -1140,10 +1170,12 @@
       const win = document.getElementById('about-window');
       const isOpen = win.style.display === 'block';
       if (isOpen) {
+        playClick('close');
         win.classList.remove('visible');
         setTimeout(() => { win.style.display = 'none'; }, 180);
         hideTask('task-about');
       } else {
+        playClick('open');
         win.style.display = 'block';
         centerElement(win);
         requestAnimationFrame(() => win.classList.add('visible'));
@@ -1161,6 +1193,7 @@
       element.style.zIndex = '19';
     }
     function minimizeWindow(winId) {
+      playClick('close');
       const win = document.getElementById(winId);
       win.classList.remove('visible');
       setTimeout(() => { win.style.display = 'none'; }, 180);
