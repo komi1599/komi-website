@@ -225,6 +225,16 @@
     }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     #terminal-window { background: #000; }
+    #monitor-window { background: rgba(10,10,10,0.85); backdrop-filter: blur(12px); width: min(340px, calc(100vw - 16px)); }
+    #monitor-body { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+    .monitor-row { display: flex; flex-direction: column; gap: 6px; }
+    .monitor-label { font-size: 11px; color: #888; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 700; display: flex; justify-content: space-between; }
+    .monitor-bar-bg { height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
+    .monitor-bar-fill { height: 100%; background: #fff; border-radius: 4px; transition: width 0.4s ease; width: 0%; }
+    .monitor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .monitor-stat { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 10px; text-align: center; }
+    .monitor-stat-value { font-size: 18px; font-weight: 700; color: #fff; }
+    .monitor-stat-label { font-size: 10px; color: #888; margin-top: 4px; letter-spacing: 0.03em; text-transform: uppercase; }
 
     #music-window {
       background: rgba(15,15,15,0.3);
@@ -632,6 +642,44 @@
         </div>
       </div>
     </div>
+    <div id="monitor-window" class="window" style="left: 360px; top: 160px; background: rgba(15,15,15,0.3);">
+      <div class="window-header" id="monitor-drag">
+        <span>activity monitor</span>
+        <button class="close-btn" id="monitor-close">✕</button>
+      </div>
+      <div class="window-body" id="monitor-body">
+        <div class="monitor-row">
+          <div class="monitor-label"><span>cpu</span><span id="cpu-val">12%</span></div>
+          <div class="monitor-bar-bg"><div class="monitor-bar-fill" id="cpu-bar"></div></div>
+        </div>
+        <div class="monitor-row">
+          <div class="monitor-label"><span>memory</span><span id="ram-val">47%</span></div>
+          <div class="monitor-bar-bg"><div class="monitor-bar-fill" id="ram-bar"></div></div>
+        </div>
+        <div class="monitor-row">
+          <div class="monitor-label"><span>network</span><span id="net-val">0.4 mb/s</span></div>
+          <div class="monitor-bar-bg"><div class="monitor-bar-fill" id="net-bar"></div></div>
+        </div>
+        <div class="monitor-grid">
+          <div class="monitor-stat">
+            <div class="monitor-stat-value" id="uptime-val">0s</div>
+            <div class="monitor-stat-label">uptime</div>
+          </div>
+          <div class="monitor-stat">
+            <div class="monitor-stat-value" id="proc-val">24</div>
+            <div class="monitor-stat-label">processes</div>
+          </div>
+          <div class="monitor-stat">
+            <div class="monitor-stat-value" id="threads-val">142</div>
+            <div class="monitor-stat-label">threads</div>
+          </div>
+          <div class="monitor-stat">
+            <div class="monitor-stat-value" id="temp-val">42°c</div>
+            <div class="monitor-stat-label">temp</div>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="profile-popup">
       <img class="pfp" src="" alt="pfp">
       <div class="name"></div>
@@ -672,6 +720,7 @@
       { img: "./assets/icons/KU2GZgmQXz.png", label: "mpv", type: "music" },
       { img: "./assets/bio-icon.png", label: "bio", type: "bio" },
       { img: "./assets/projects.png", label: "projects", type: "projects" },
+      { img: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='3' width='20' height='14' rx='2' ry='2'/%3E%3Cline x1='8' y1='21' x2='16' y2='21'/%3E%3Cline x1='12' y1='17' x2='12' y2='21'/%3E%3C/svg%3E", label: "monitor", type: "monitor" },
       // spotify window auto-opens, no icon needed
     ];
     function ensureTask(taskId, label, iconPath) {
@@ -753,6 +802,7 @@
         else if (icon.type === 'music') wrap.onclick = toggleMusicPlayer;
         else if (icon.type === 'bio') wrap.onclick = toggleBio;
         else if (icon.type === 'projects') wrap.onclick = toggleProjects;
+        else if (icon.type === 'monitor') wrap.onclick = toggleMonitor;
         // spotify has no icon
         iconsDiv.appendChild(node);
       });
@@ -1034,6 +1084,21 @@
         task.onclick = toggleProjects;
       }
     }
+    function toggleMonitor() {
+      const win = document.getElementById('monitor-window');
+      const isOpen = win.style.display === 'block';
+      if (isOpen) {
+        win.classList.remove('visible');
+        setTimeout(() => { win.style.display = 'none'; }, 180);
+        hideTask('task-monitor');
+      } else {
+        win.style.display = 'block';
+        centerElement(win);
+        requestAnimationFrame(() => win.classList.add('visible'));
+        const task = ensureTask('task-monitor', 'monitor', "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2' y='3' width='20' height='14' rx='2' ry='2'/%3E%3Cline x1='8' y1='21' x2='16' y2='21'/%3E%3Cline x1='12' y1='17' x2='12' y2='21'/%3E%3C/svg%3E");
+        task.onclick = toggleMonitor;
+      }
+    }
     function toggleSpotify() {
       const win = document.getElementById('spotify-window');
       const isOpen = win.style.display === 'block';
@@ -1070,6 +1135,7 @@
       makeDraggable(document.getElementById('music-drag'), document.getElementById('music-window'));
       makeDraggable(document.getElementById('bio-drag'), document.getElementById('bio-window'));
       makeDraggable(document.getElementById('projects-drag'), document.getElementById('projects-window'));
+      makeDraggable(document.getElementById('monitor-drag'), document.getElementById('monitor-window'));
       // Spotify window is non-draggable
       
       document.querySelectorAll('.window').forEach(window => {
@@ -1081,6 +1147,7 @@
       document.getElementById('music-close').onclick = toggleMusicPlayer;
       document.getElementById('bio-close').onclick = toggleBio;
       document.getElementById('projects-close').onclick = toggleProjects;
+      document.getElementById('monitor-close').onclick = toggleMonitor;
       document.getElementById('spotify-close').onclick = toggleSpotify;
       
       setTimeout(() => {
@@ -1139,7 +1206,39 @@
       document.getElementById('next').onclick = nextTrack;
       document.getElementById('volume-btn').onclick = toggleMute;
       document.getElementById('volume-slider').oninput = (e) => updateVolume(e.target.value);
-      
+
+      // System monitor animation
+      (function updateMonitor() {
+        const cpu = Math.floor(Math.random() * 30 + 5);
+        const ram = Math.floor(Math.random() * 25 + 35);
+        const net = (Math.random() * 2 + 0.1).toFixed(1);
+        const procs = Math.floor(Math.random() * 8 + 20);
+        const threads = Math.floor(Math.random() * 20 + 130);
+        const temp = Math.floor(Math.random() * 8 + 38);
+        const s = Math.floor(performance.now() / 1000);
+        const uptimeStr = s < 60 ? s + 's' : s < 3600 ? Math.floor(s / 60) + 'm' : Math.floor(s / 3600) + 'h';
+        const cpuBar = document.getElementById('cpu-bar');
+        const ramBar = document.getElementById('ram-bar');
+        const netBar = document.getElementById('net-bar');
+        if (cpuBar) cpuBar.style.width = cpu + '%';
+        if (ramBar) ramBar.style.width = ram + '%';
+        if (netBar) netBar.style.width = Math.min(net * 20, 100) + '%';
+        const cpuVal = document.getElementById('cpu-val');
+        const ramVal = document.getElementById('ram-val');
+        const netVal = document.getElementById('net-val');
+        const uptimeVal = document.getElementById('uptime-val');
+        const procVal = document.getElementById('proc-val');
+        const threadsVal = document.getElementById('threads-val');
+        const tempVal = document.getElementById('temp-val');
+        if (cpuVal) cpuVal.textContent = cpu + '%';
+        if (ramVal) ramVal.textContent = ram + '%';
+        if (netVal) netVal.textContent = net + ' mb/s';
+        if (uptimeVal) uptimeVal.textContent = uptimeStr;
+        if (procVal) procVal.textContent = procs;
+        if (threadsVal) threadsVal.textContent = threads;
+        if (tempVal) tempVal.textContent = temp + '°c';
+        setTimeout(updateMonitor, 2000);
+      })();
 
       const out = document.getElementById('terminal-output');
       const promptUser = '7896789678';
