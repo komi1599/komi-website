@@ -1324,7 +1324,7 @@
       makeDraggable(document.getElementById('music-drag'), document.getElementById('music-window'));
       makeDraggable(document.getElementById('projects-drag'), document.getElementById('projects-window'));
       makeDraggable(document.getElementById('about-drag'), document.getElementById('about-window'));
-      // Spotify window is non-draggable
+      makeDraggable(document.getElementById('spotify-drag'), document.getElementById('spotify-window'));
 
       document.querySelectorAll('.window').forEach(window => {
         window.addEventListener('mousedown', handleWindowClick);
