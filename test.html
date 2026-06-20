@@ -24,7 +24,13 @@
       background: transparent;
       transition: background 1s cubic-bezier(.77,0,.18,1);
       text-transform: lowercase;
-      cursor: url('./assets/cursor.gif'), auto;
+      cursor: url('./assets/cursor.gif') 16 16, auto !important;
+    }
+    * {
+      cursor: url('./assets/cursor.gif') 16 16, auto !important;
+    }
+    button, a, .window-header, .icon, .minimize-btn, .close-btn {
+      cursor: url('./assets/cursor.gif') 16 16, auto !important;
     }
     #wallpaper {
       position: fixed;
