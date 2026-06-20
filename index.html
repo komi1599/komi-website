@@ -30,6 +30,13 @@
       transition: filter 1s cubic-bezier(.77,0,.18,1);
       pointer-events: none;
     }
+    #snow-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
     .cursor-particle {
       position: fixed;
       width: 4px;
@@ -529,6 +536,7 @@
 </head>
 <body>
   <img id="wallpaper" src="./assets/wallpaper/DCA3UhDIVf.jpg">
+  <canvas id="snow-canvas"></canvas>
   <div class="desktop">
     <div id="icons"></div>
     <template id="icon-template">
@@ -1087,7 +1095,53 @@
         win.style.display = 'block';
         requestAnimationFrame(() => win.classList.add('visible'));
       }, 500);
-      
+
+      // Black snow effect
+      (function() {
+        const canvas = document.getElementById('snow-canvas');
+        const ctx = canvas.getContext('2d');
+        let w, h;
+        function resize() {
+          w = canvas.width = window.innerWidth;
+          h = canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+        const flakes = [];
+        const count = 80;
+        for (let i = 0; i < count; i++) {
+          flakes.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            r: Math.random() * 1.5 + 0.5,
+            d: Math.random() * count,
+            dx: Math.random() * 0.4 - 0.2,
+            dy: Math.random() * 0.8 + 0.3
+          });
+        }
+        function draw() {
+          ctx.clearRect(0, 0, w, h);
+          ctx.fillStyle = 'rgba(255,255,255,0.5)';
+          for (let i = 0; i < count; i++) {
+            const f = flakes[i];
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            ctx.fill();
+            f.y += f.dy;
+            f.x += f.dx + Math.sin(f.d) * 0.3;
+            f.d += 0.02;
+            if (f.y > h) {
+              f.y = -2;
+              f.x = Math.random() * w;
+            }
+            if (f.x > w + 2) f.x = -2;
+            if (f.x < -2) f.x = w + 2;
+          }
+          requestAnimationFrame(draw);
+        }
+        draw();
+      })();
+
       // Custom audio player controls
       const audio = document.getElementById('custom-audio');
       audio.volume = 0.3;
