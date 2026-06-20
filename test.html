@@ -1883,6 +1883,25 @@ opsec is already the newest version (99.9).
       });
     });
 
+    (function tabGlitch() {
+      const full = 'komi';
+      let len = full.length;
+      let deleting = true;
+      function step() {
+        document.title = full.substring(0, len);
+        if (deleting) {
+          len--;
+          if (len === 0) { deleting = false; setTimeout(step, 250); }
+          else setTimeout(step, 180);
+        } else {
+          len++;
+          if (len > full.length) { deleting = true; len = full.length; setTimeout(step, 1200); }
+          else setTimeout(step, 180);
+        }
+      }
+      step();
+    })();
+
     loadFromStorage();
     playMusic(0);
   </script>
