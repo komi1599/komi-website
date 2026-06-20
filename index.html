@@ -265,126 +265,6 @@
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
     #terminal-window { background: #000; }
 
-    #music-window {
-      background: rgba(15,15,15,0.3);
-    }
-    #music-window .window-body {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-    }
-    #music-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: 0.04em;
-      text-align: center;
-      text-shadow: 0 2px 8px #000;
-      min-height: 24px;
-      transition: color 0.3s;
-      margin-bottom: 8px;
-    }
-    #music-controls {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    #music-controls button {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 24px;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s, color 0.2s, transform 0.2s;
-      cursor: pointer;
-      outline: none;
-    }
-    #music-controls button:hover {
-      background: rgba(255,255,255,0.08);
-      transform: scale(1.1);
-    }
-    #volume-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-    }
-    #volume-btn {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 24px;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s, transform 0.2s;
-      cursor: pointer;
-      outline: none;
-      filter: grayscale(1);
-    }
-    #volume-btn:hover {
-      background: rgba(255,255,255,0.08);
-    }
-    #volume-slider {
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 120px;
-      height: 8px;
-      background: rgba(20,20,20,0.95);
-      border-radius: 4px;
-      border: 1px solid rgba(255,255,255,0.1);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.2s, visibility 0.2s;
-      margin-bottom: 8px;
-      cursor: pointer;
-    }
-    #volume-container:hover #volume-slider {
-      opacity: 1;
-      visibility: visible;
-    }
-    #volume-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #fff;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    }
-    #volume-slider::-moz-range-thumb {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #fff;
-      cursor: pointer;
-      border: none;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    }
-    #volume-slider::-webkit-slider-track {
-      background: rgba(255,255,255,0.2);
-      border-radius: 4px;
-      height: 8px;
-    }
-    #volume-slider::-moz-range-track {
-      background: rgba(255,255,255,0.2);
-      border-radius: 4px;
-      height: 8px;
-      border: none;
-    }
-    #music-window audio { display: none; }
     #profile-popup {
       position: fixed;
       display: none;
@@ -625,29 +505,6 @@
       </div>
     </template>
     
-    <div id="music-window" class="window" style="left: 600px; top: 120px; background: rgba(15,15,15,0.3);">
-      <div class="window-header" id="music-drag">
-        <span>mpv</span>
-        <div style="display:flex; align-items:center; gap:2px;">
-          <button class="minimize-btn" id="music-min">─</button>
-          <button class="close-btn" id="music-close">✕</button>
-        </div>
-      </div>
-      <div class="window-body">
-      <div id="music-title"></div>
-        <div id="music-controls">
-          <button id="loop">∞</button>
-        <button id="prev">&#9198;</button>
-        <button id="play">&#9654;</button>
-        <button id="next">&#9197;</button>
-          <div id="volume-container">
-            <button id="volume-btn">🔊</button>
-            <input type="range" id="volume-slider" min="0" max="100" value="100">
-      </div>
-        </div>
-      <audio id="audio"></audio>
-      </div>
-    </div>
     <div id="notepad-window" class="window" style="left: 80px; top: 100px; background: rgba(15,15,15,0.3);">
       <div class="window-header" id="notepad-drag">
         <span>unsaved document 1</span>
@@ -797,10 +654,9 @@
     const defaultIcons = [
       { img: "./assets/icons/VAtuAVJFG3.png", label: "xed", type: "notepad" },
       { img: "./assets/icons/77Ai7oI52h.png", label: "kitty", type: "terminal" },
-      { img: "./assets/icons/KU2GZgmQXz.png", label: "mpv", type: "music" },
+      { img: "./assets/icons/KU2GZgmQXz.png", label: "mp3", type: "spotify" },
       { img: "./assets/projects.png", label: "projects", type: "projects" },
       { img: "./assets/avatar1.png", label: "about me", type: "about" },
-      // spotify window auto-opens, no icon needed
     ];
     function ensureTask(taskId, label, iconPath) {
       const bar = document.getElementById('tasks');
@@ -838,16 +694,6 @@
       el.classList.remove('visible');
       setTimeout(() => { if (document.getElementById(taskId) === el) el.style.display = 'none'; }, 180);
     }
-    const defaultMusic = [
-      { title: "walk away as the door slams (prod. yung cortex)", src: "./assets/music/ItSkYnUOEZ.mp3" },
-      { title: "early bird (prod. bomberbombboy)", src: "./assets/music/bg7ex7C139.mp3" },
-      { title: "backstage ft zayguapkid & bloody (dmtnas)", src: "./assets/music/KUkwNMqzr8.mp3" },
-      { title: "ain't gone lie (prod.xangang)", src: "./assets/music/hzELfh0PxG.mp3" },
-      { title: "rainsnow", src: "./assets/music/OGm2ETtWK6.mp3" }
-    ];
-    let musicList = [...defaultMusic];
-    let currentTrack = 0;
-    let isPlaying = false;
     let iconList = [...defaultIcons];
     let lanyardId = "1258873248406573178";
     let customText = "";
@@ -879,10 +725,9 @@
         wrap.classList.add('icon-' + icon.type);
         if (icon.type === 'notepad') wrap.onclick = toggleNotepad;
         else if (icon.type === 'terminal') wrap.onclick = toggleTerminal;
-        else if (icon.type === 'music') wrap.onclick = toggleMusicPlayer;
+        else if (icon.type === 'spotify') wrap.onclick = toggleSpotify;
         else if (icon.type === 'projects') wrap.onclick = toggleProjects;
         else if (icon.type === 'about') wrap.onclick = toggleAbout;
-        // spotify has no icon
         iconsDiv.appendChild(node);
       });
       localStorage.setItem('desktop_icons', JSON.stringify(iconList));
@@ -900,113 +745,6 @@
       fetchLanyard();
     }
 
-    let audioVolume = 1, isMuted = false, previousVolume = 1, isLooping = false;
-
-    function playMusic(idx) {
-      currentTrack = idx;
-      const audio = document.getElementById('audio');
-      audio.src = musicList[currentTrack].src;
-      document.getElementById('music-title').textContent = musicList[currentTrack].title;
-      
-      isPlaying = false;
-      document.getElementById('play').innerHTML = '&#9654;';
-    }
-
-    function togglePlay() {
-      const audio = document.getElementById('audio');
-      if (!isPlaying) {
-        audio.play().then(() => {
-          isPlaying = true;
-          document.getElementById('play').innerHTML = '&#10073;&#10073;';
-        }).catch(error => {
-          console.warn('audio playback failed:', error);
-          isPlaying = false;
-          document.getElementById('play').innerHTML = '&#9654;';
-        });
-      } else {
-        audio.pause();
-        isPlaying = false;
-        document.getElementById('play').innerHTML = '&#9654;';
-      }
-    }
-
-    function prevTrack() {
-      currentTrack = (currentTrack - 1 + musicList.length) % musicList.length;
-      playMusic(currentTrack);
-    }
-
-    function nextTrack() {
-      currentTrack = (currentTrack + 1) % musicList.length;
-      playMusic(currentTrack);
-    }
-
-    function toggleMute() {
-      const audio = document.getElementById('audio');
-      const volumeBtn = document.getElementById('volume-btn');
-      const volumeSlider = document.getElementById('volume-slider');
-      
-      if (isMuted) {
-        audio.volume = previousVolume;
-        volumeSlider.value = previousVolume * 100;
-        volumeBtn.textContent = previousVolume > 0.5 ? '🔊' : previousVolume > 0 ? '🔉' : '🔈';
-        isMuted = false;
-      } else {
-        previousVolume = audio.volume;
-        audio.volume = 0;
-        volumeSlider.value = 0;
-        volumeBtn.textContent = '🔇';
-        isMuted = true;
-      }
-    }
-
-    function toggleLoop() {
-      const loopBtn = document.getElementById('loop');
-      isLooping = !isLooping;
-      
-      if (isLooping) {
-        loopBtn.textContent = '∞';
-        loopBtn.style.color = '#4CAF50';
-      } else {
-        loopBtn.textContent = '∞';
-        loopBtn.style.color = '#fff';
-      }
-    }
-
-    function updateVolume(value) {
-      const audio = document.getElementById('audio');
-      const volumeBtn = document.getElementById('volume-btn');
-      
-      audioVolume = value / 100;
-      audio.volume = audioVolume;
-      isMuted = audioVolume === 0;
-      
-      volumeBtn.textContent = audioVolume === 0 ? '🔇' : 
-                             audioVolume > 0.5 ? '🔊' : 
-                             audioVolume > 0 ? '🔉' : '🔈';
-    }
-
-
-    document.getElementById('audio').onended = () => {
-      if (isLooping) {
-        const audio = document.getElementById('audio');
-        audio.currentTime = 0;
-        audio.play().catch(error => {
-          console.warn('audio playback failed:', error);
-        });
-      } else {
-        nextTrack();
-      }
-    };
-
-    document.getElementById('audio').onpause = () => {
-      isPlaying = false;
-      document.getElementById('play').innerHTML = '&#9654;';
-    };
-
-    document.getElementById('audio').onplay = () => {
-      isPlaying = true;
-      document.getElementById('play').innerHTML = '&#10073;&#10073;';
-    };
     function playClick(type) {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1028,32 +766,6 @@
         osc.stop(now + 0.12);
         setTimeout(() => ctx.close(), 200);
       } catch (e) {}
-    }
-    function toggleMusicPlayer() {
-      const win = document.getElementById('music-window');
-      if (!win) return;
-      const isOpen = win.style.display === 'block';
-      if (isOpen) {
-        playClick('close');
-        win.classList.remove('visible');
-        setTimeout(() => { win.style.display = 'none'; }, 180);
-        hideTask('task-mpv');
-        const audio = document.getElementById('audio');
-        if (audio) {
-          audio.pause();
-          isPlaying = false;
-          const playBtn = document.getElementById('play');
-          if (playBtn) playBtn.innerHTML = '&#9654;';
-        }
-      } else {
-        playClick('open');
-        win.style.display = 'block';
-        centerElement(win);
-        requestAnimationFrame(() => win.classList.add('visible'));
-        const task = ensureTask('task-mpv', 'mpv', './assets/icons/KU2GZgmQXz.png');
-        task.onclick = toggleMusicPlayer;
-        playMusic(currentTrack);
-      }
     }
     function makeDraggable(handleEl, moveEl) {
       let dragging = false;
@@ -1183,13 +895,13 @@
         playClick('close');
         win.classList.remove('visible');
         setTimeout(() => { win.style.display = 'none'; }, 180);
-        hideTask('task-spotify');
+        hideTask('task-mp3');
       } else {
         playClick('open');
         win.style.display = 'block';
         centerElement(win);
         requestAnimationFrame(() => win.classList.add('visible'));
-        const task = ensureTask('task-spotify', 'spotify', './assets/spotify.png');
+        const task = ensureTask('task-mp3', 'mp3', './assets/icons/KU2GZgmQXz.png');
         task.onclick = toggleSpotify;
       }
     }
@@ -1235,7 +947,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       makeDraggable(document.getElementById('notepad-drag'), document.getElementById('notepad-window'));
       makeDraggable(document.getElementById('terminal-drag'), document.getElementById('terminal-window'));
-      makeDraggable(document.getElementById('music-drag'), document.getElementById('music-window'));
       makeDraggable(document.getElementById('projects-drag'), document.getElementById('projects-window'));
       makeDraggable(document.getElementById('about-drag'), document.getElementById('about-window'));
       makeDraggable(document.getElementById('spotify-drag'), document.getElementById('spotify-window'));
@@ -1248,21 +959,12 @@
       document.getElementById('notepad-min').onclick = () => minimizeWindow('notepad-window');
       document.getElementById('terminal-close').onclick = toggleTerminal;
       document.getElementById('terminal-min').onclick = () => minimizeWindow('terminal-window');
-      document.getElementById('music-close').onclick = toggleMusicPlayer;
-      document.getElementById('music-min').onclick = () => minimizeWindow('music-window');
       document.getElementById('projects-close').onclick = toggleProjects;
       document.getElementById('projects-min').onclick = () => minimizeWindow('projects-window');
       document.getElementById('spotify-close').onclick = toggleSpotify;
       document.getElementById('spotify-min').onclick = () => minimizeWindow('spotify-window');
       document.getElementById('about-close').onclick = toggleAbout;
       document.getElementById('about-min').onclick = () => minimizeWindow('about-window');
-
-      setTimeout(() => {
-        const win = document.getElementById('spotify-window');
-        win.style.display = 'block';
-        centerElement(win);
-        requestAnimationFrame(() => win.classList.add('visible'));
-      }, 500);
 
       // Black snow effect
       (function() {
@@ -1321,7 +1023,12 @@
       const muteIcon = document.getElementById('audio-mute-icon');
       const komiTracks = [
         { src: './assets/migraine.mp3', artist: 'jaydes', title: 'migraine', cover: './assets/album-art.jpg' },
-        { src: './assets/sometimes.mp3', artist: 'sometimes', title: 'sometimes', cover: './assets/sometimes-cover.jpg' }
+        { src: './assets/sometimes.mp3', artist: 'sometimes', title: 'sometimes', cover: './assets/sometimes-cover.jpg' },
+        { src: './assets/music/ItSkYnUOEZ.mp3', artist: 'unknown', title: 'walk away as the door slams', cover: './assets/album-art.jpg' },
+        { src: './assets/music/bg7ex7C139.mp3', artist: 'unknown', title: 'early bird', cover: './assets/album-art.jpg' },
+        { src: './assets/music/KUkwNMqzr8.mp3', artist: 'unknown', title: 'backstage', cover: './assets/album-art.jpg' },
+        { src: './assets/music/hzELfh0PxG.mp3', artist: 'unknown', title: "ain't gone lie", cover: './assets/album-art.jpg' },
+        { src: './assets/music/OGm2ETtWK6.mp3', artist: 'unknown', title: 'rainsnow', cover: './assets/album-art.jpg' }
       ];
       let komiTrackIdx = 0;
       
@@ -1768,7 +1475,6 @@ opsec is already the newest version (99.9).
     });
 
     loadFromStorage();
-    playMusic(0);
   </script>
 </body>
 </html>
