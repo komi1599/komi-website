@@ -492,6 +492,8 @@
       letter-spacing: 0.04em;
       text-shadow: 0 1px 4px #000;
       font-weight: 600;
+      display: inline-flex;
+      align-items: center;
     }
     #profile-pic {
       width: 32px;
@@ -663,7 +665,10 @@
       </div>
       <div class="right">
         <span class="clock"></span>
-        <span class="views" id="view-counter"></span>
+        <span class="views" id="view-counter">
+          <svg id="view-eye" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:3px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span id="view-count-text"></span>
+        </span>
       </div>
     </div>
   </div>
@@ -1417,9 +1422,13 @@ opsec is already the newest version (99.9).
     
     function updateViewCounter() {
       let views = parseInt(localStorage.getItem('komi_views') || '0');
-      views++;
-      localStorage.setItem('komi_views', views);
-      document.getElementById('view-counter').textContent = views.toLocaleString() + ' views';
+      const hasViewed = localStorage.getItem('komi_viewed');
+      if (!hasViewed) {
+        views++;
+        localStorage.setItem('komi_views', views);
+        localStorage.setItem('komi_viewed', 'true');
+      }
+      document.getElementById('view-count-text').textContent = views.toLocaleString() + ' views';
     }
     updateViewCounter();
     function showProfilePopup() {
