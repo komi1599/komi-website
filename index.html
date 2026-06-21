@@ -4,10 +4,13 @@
   <meta charset="UTF-8">
   <title>komi</title>
   <link rel="icon" type="image/png" href="./assets/favicon.png">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <meta name="theme-color" content="#111111">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
   <style>
     html, body {
@@ -19,15 +22,17 @@
       font-family: 'Montserrat', sans-serif;
       overflow: hidden;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     body {
       background: transparent;
       transition: background 1s cubic-bezier(.77,0,.18,1);
       text-transform: lowercase;
-      cursor: none;
     }
-    * {
-      cursor: none !important;
+    @media (hover: hover) and (pointer: fine) {
+      body { cursor: none; }
+      * { cursor: none !important; }
     }
     #wallpaper {
       position: fixed;
@@ -431,20 +436,59 @@
       #icons {
         left: 8px;
         top: 8px;
+        gap: 20px;
       }
-      .icon { width: 60px; gap: 2px; }
-      .icon img { width: 40px; height: 40px; }
-      .icon span { font-size: 12px; }
+      .icon { width: 56px; padding: 6px 0 3px 0; }
+      .icon img { width: 36px; height: 36px; border-radius: 10px; }
+      .icon span { font-size: 11px; }
       #panel {
-        padding: 0 8px;
+        padding: 0 10px;
+        height: 40px;
+        border-radius: 10px;
       }
-      #tasks { max-width: 50vw; overflow-x: auto; }
-      #profile-popup { right: 8px; left: 8px; min-width: unset; }
-      .window { width: calc(100vw - 16px); max-height: calc(100vh - 100px); }
-      #terminal-window { width: calc(100vw - 16px); }
-      /* Make prev/next controls grayscale on mobile where they render as color emoji */
-      #music-controls #prev,
-      #music-controls #next { filter: grayscale(1); }
+      #tasks { max-width: 45vw; overflow-x: auto; }
+      .task-icon { padding: 4px 6px; gap: 4px; font-size: 12px; }
+      .task-icon img { width: 14px !important; height: 14px !important; }
+      #profile-popup {
+        left: 8px;
+        right: 8px;
+        min-width: unset;
+        bottom: 56px;
+        padding: 24px 20px 18px 20px;
+      }
+      .window {
+        width: calc(100vw - 16px) !important;
+        max-height: calc(100vh - 72px);
+      }
+      #terminal-window { width: calc(100vw - 16px) !important; }
+      .terminal-body { height: calc(100vh - 120px); }
+      #notepad-text { height: calc(100vh - 140px); }
+      #about-window { width: calc(100vw - 16px) !important; max-width: 280px; left: calc(50% - 140px) !important; }
+      #spotify-window { width: 260px !important; left: calc(50% - 130px) !important; }
+      .clock { font-size: 14px; min-width: 70px; }
+      .views { display: none; }
+      #profile-name { font-size: 14px; margin-right: 4px; }
+      #profile-pic { width: 28px; height: 28px; }
+    }
+    @media (max-width: 400px) {
+      #icons {
+        left: 4px;
+        top: 4px;
+        gap: 14px;
+      }
+      .icon { width: 48px; padding: 4px 0 2px 0; }
+      .icon img { width: 32px; height: 32px; border-radius: 8px; }
+      .icon span { font-size: 10px; }
+      #profile-name { display: none; }
+      #profile-pic { width: 24px; height: 24px; }
+      .clock { font-size: 12px; min-width: 60px; }
+      #panel { padding: 0 6px; height: 36px; }
+      #tasks { max-width: 55vw; }
+    }
+    @media (min-width: 701px) and (max-width: 1024px) {
+      .window { max-height: calc(100vh - 100px); }
+      .terminal-body { height: 50vh; max-height: 400px; }
+      #notepad-text { height: 45vh; max-height: 380px; }
     }
     #about-window { width: 280px; }
     #about-window .about-pic {
@@ -646,6 +690,11 @@
       e.preventDefault();
       window.open('https://www.google.com/search?q=how+do+i+kill+myself', '_blank');
     });
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches || 'ontouchstart' in window;
+    if (isTouchDevice) {
+      const cc = document.getElementById('custom-cursor');
+      if (cc) cc.style.display = 'none';
+    }
     const defaultProfilePic = "./assets/avatar.png";
     const defaultProfileName = "7896789678";
     const defaultWallpapers = [
@@ -978,7 +1027,7 @@
         resize();
         window.addEventListener('resize', resize);
         const flakes = [];
-        const count = 80;
+        const count = isTouchDevice ? 30 : 80;
         for (let i = 0; i < count; i++) {
           flakes.push({
             x: Math.random() * w,
@@ -1282,19 +1331,21 @@ opsec is already the newest version (99.9).
     }
     typeStatus();
     
-    // Cursor particle trail
-    let lastParticle = 0;
-    document.addEventListener('mousemove', (e) => {
-      const now = Date.now();
-      if (now - lastParticle < 30) return;
-      lastParticle = now;
-      const p = document.createElement('div');
-      p.className = 'cursor-particle';
-      p.style.left = (e.clientX - 2) + 'px';
-      p.style.top = (e.clientY - 2) + 'px';
-      document.body.appendChild(p);
-      setTimeout(() => p.remove(), 600);
-    });
+    // Cursor particle trail (desktop only)
+    if (!isTouchDevice) {
+      let lastParticle = 0;
+      document.addEventListener('mousemove', (e) => {
+        const now = Date.now();
+        if (now - lastParticle < 30) return;
+        lastParticle = now;
+        const p = document.createElement('div');
+        p.className = 'cursor-particle';
+        p.style.left = (e.clientX - 2) + 'px';
+        p.style.top = (e.clientY - 2) + 'px';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 600);
+      });
+    }
     
     function updateViewCounter() {
       let views = parseInt(localStorage.getItem('komi_views') || '0');
@@ -1454,18 +1505,20 @@ opsec is already the newest version (99.9).
       step();
     })();
 
-    const customCursor = document.getElementById('custom-cursor');
-    let cursorVisible = false;
-    document.addEventListener('mousemove', (e) => {
-      if (customCursor) {
-        customCursor.style.left = e.clientX + 'px';
-        customCursor.style.top = e.clientY + 'px';
-        if (!cursorVisible) {
-          customCursor.style.display = 'block';
-          cursorVisible = true;
+    if (!isTouchDevice) {
+      const customCursor = document.getElementById('custom-cursor');
+      let cursorVisible = false;
+      document.addEventListener('mousemove', (e) => {
+        if (customCursor) {
+          customCursor.style.left = e.clientX + 'px';
+          customCursor.style.top = e.clientY + 'px';
+          if (!cursorVisible) {
+            customCursor.style.display = 'block';
+            cursorVisible = true;
+          }
         }
-      }
-    });
+      });
+    }
 
     loadFromStorage();
   </script>
