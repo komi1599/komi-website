@@ -11,6 +11,9 @@
   <meta name="theme-color" content="#111111">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data: blob:; connect-src 'self' https://api.lanyard.rest; media-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'none';">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
   <style>
     html, body {
@@ -540,6 +543,10 @@
   <div id="custom-cursor"><img src="./assets/cursor.gif" alt=""></div>
   <img id="wallpaper" src="./assets/wallpaper/DCA3UhDIVf.jpg">
   <canvas id="snow-canvas"></canvas>
+  <noscript>
+    <style>body{background:#111;color:#fff;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}</style>
+    <div style="text-align:center;">javascript is required to run komiOS.<br><span style="color:#666">enable it and refresh.</span></div>
+  </noscript>
   <div class="desktop">
     <div id="icons"></div>
     <template id="icon-template">
@@ -558,7 +565,7 @@
         </div>
       </div>
       <div class="window-body">
-        <textarea id="notepad-text" placeholder=" "></textarea>
+        <textarea id="notepad-text" placeholder=" " autocomplete="off" spellcheck="false"></textarea>
       </div>
     </div>
     <div id="terminal-window" class="window" style="left: 520px; top: 140px; background: rgba(15,15,15,0.3);">
@@ -582,11 +589,11 @@
         </div>
       </div>
       <div class="window-body" id="projects-body" style="display:flex; flex-direction:column; gap:16px; padding:16px;">
-        <a href="https://discord.gg/sYkY5ZMHm" target="_blank" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff; background:rgba(255,255,255,0.05); padding:12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.08); transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+        <a href="https://discord.gg/sYkY5ZMHm" target="_blank" rel="noopener noreferrer" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff; background:rgba(255,255,255,0.05); padding:12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.08); transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
           <img src="./assets/clarity-logo.png" style="width:96px; height:48px; border-radius:8px; object-fit:contain; filter:grayscale(1);">
           <span style="font-weight:700; letter-spacing:0.02em;">clarity.su</span>
         </a>
-        <a href="https://discord.gg/sYkY5ZMHm" target="_blank" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff; background:rgba(255,255,255,0.05); padding:12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.08); transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
+        <a href="https://discord.gg/sYkY5ZMHm" target="_blank" rel="noopener noreferrer" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff; background:rgba(255,255,255,0.05); padding:12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.08); transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
           <img src="./assets/spotify-reader.png" style="width:96px; height:48px; border-radius:8px; object-fit:contain; filter:grayscale(1);">
           <span style="font-weight:700; letter-spacing:0.02em;">external spotify reader</span>
         </a>
