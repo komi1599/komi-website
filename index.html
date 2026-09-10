@@ -8,21 +8,31 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <meta name="theme-color" content="#111111">
+  <meta name="theme-color" content="#0a0a0a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data: blob:; connect-src 'self' https://api.lanyard.rest; media-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'none';">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@500;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg: #0a0a0a;
+      --glass: rgba(14,14,14,0.55);
+      --glass-strong: rgba(8,8,8,0.78);
+      --line: rgba(255,255,255,0.10);
+      --line-hot: rgba(255,255,255,0.22);
+      --text: #f2f2f2;
+      --muted: #8a8a8a;
+      --ease: cubic-bezier(.22,.61,.36,1);
+    }
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
-      background: #111;
-      color: #fff;
-      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
       overflow: hidden;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
@@ -30,7 +40,6 @@
     }
     body {
       background: transparent;
-      transition: background 1s cubic-bezier(.77,0,.18,1);
       text-transform: lowercase;
     }
     @media (hover: hover) and (pointer: fine) {
@@ -42,15 +51,31 @@
       top: 0; left: 0; width: 100vw; height: 100vh;
       object-fit: cover;
       z-index: 0;
-      filter: grayscale(1) brightness(0.5);
-      transition: filter 1s cubic-bezier(.77,0,.18,1);
+      filter: grayscale(1) brightness(0.42) contrast(1.08);
+      transform: scale(1);
+      opacity: 1;
+      animation: wallpaperDrift 28s ease-in-out infinite alternate;
       pointer-events: none;
+    }
+    @keyframes wallpaperDrift {
+      from { transform: scale(1) translate(0, 0); }
+      to { transform: scale(1.05) translate(-1.2%, -0.8%); }
+    }
+    #vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.55) 100%),
+        linear-gradient(180deg, rgba(0,0,0,0.25) 0%, transparent 28%, transparent 72%, rgba(0,0,0,0.45) 100%);
+      opacity: 1;
     }
     #snow-canvas {
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
-      z-index: 1;
+      z-index: 2;
       pointer-events: none;
     }
     .cursor-particle {
@@ -71,73 +96,77 @@
       position: relative;
       width: 100vw;
       height: 100vh;
-      z-index: 1;
+      z-index: 3;
+      opacity: 1;
     }
     #icons {
       position: absolute;
-      top: 32px;
-      left: 32px;
+      top: 28px;
+      left: 24px;
       display: flex;
       flex-direction: column;
-      gap: 32px;
+      gap: 18px;
       z-index: 2;
     }
     .icon {
-      width: 72px;
+      width: 76px;
       display: flex;
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      opacity: 0.92;
-      transition: transform 0.2s cubic-bezier(.77,0,.18,1), box-shadow 0.2s;
-      border-radius: 16px;
-      padding: 8px 0 4px 0;
-      background: rgba(30,30,30,0.2);
-      box-shadow: 0 2px 12px 0 rgba(0,0,0,0.12);
-      backdrop-filter: blur(2px);
-      animation: iconIn 0.7s cubic-bezier(.77,0,.18,1);
+      opacity: 0.95;
+      transform: translateY(0) scale(1);
+      transition: transform 0.22s var(--ease), background 0.22s, box-shadow 0.22s, opacity 0.45s var(--ease);
+      border-radius: 14px;
+      padding: 10px 6px 8px;
+      background: rgba(20,20,20,0.28);
+      border: 1px solid transparent;
+      backdrop-filter: blur(6px);
     }
     .icon:hover {
-      transform: scale(1.08) translateY(-4px);
-      box-shadow: 0 6px 24px 0 rgba(0,0,0,0.22);
-      background: rgba(255,255,255,0.05);
+      transform: translateY(-3px) scale(1.05);
+      background: rgba(255,255,255,0.06);
+      border-color: var(--line);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.35);
       opacity: 1;
     }
-    .icon img {
-      width: 48px;
-      height: 48px;
-      filter: grayscale(1) contrast(1.2);
-      border-radius: 12px;
-      margin-bottom: 4px;
-      transition: filter 0.3s;
-      object-fit: contain;
-      background: rgba(255,255,255,0.06);
+    .icon:active { transform: scale(0.97); }
+    .icon.icon-launch {
+      animation: iconLaunch .45s var(--ease);
     }
-    .icon-about {
-      background: #0a0a0a;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.06);
+    .icon img {
+      width: 44px;
+      height: 44px;
+      filter: none;
+      border-radius: 11px;
+      margin-bottom: 6px;
+      transition: transform .25s var(--ease), box-shadow .25s;
+      object-fit: contain;
+      background: #000;
+      box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
+    }
+    .icon:hover img { transform: scale(1.06) rotate(-2deg); }
+    @keyframes iconLaunch {
+      0% { transform: scale(1); }
+      35% { transform: scale(0.88) translateY(4px); }
+      70% { transform: scale(1.08) translateY(-6px); }
+      100% { transform: scale(1) translateY(0); }
     }
     .icon-about img {
-      background: transparent !important;
-      filter: grayscale(1) contrast(1.4) brightness(0.4);
+      background: #000 !important;
+      filter: none;
     }
     .icon span {
-      font-size: 13px;
+      font-size: 12px;
       color: #fff;
-      text-shadow: 0 1px 2px #000;
-      letter-spacing: 0.02em;
+      text-shadow: 0 1px 3px #000;
+      letter-spacing: 0.03em;
       font-weight: 700;
       text-align: center;
-      margin-top: 2px;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
       width: 100%;
-    }
-    @keyframes iconIn {
-      0% { opacity: 0; transform: scale(0.7) translateY(30px);}
-      100% { opacity: 1; transform: scale(1) translateY(0);}
     }
     #icon-template { display: none; }
     .tasks { display: flex; align-items: center; gap: 10px; }
@@ -156,84 +185,101 @@
       transition: opacity .2s cubic-bezier(.77,0,.18,1), transform .2s cubic-bezier(.77,0,.18,1);
       cursor: pointer;
     }
-    .task-icon.visible { opacity: 1; transform: scale(1); }
+    .task-icon.visible { opacity: 1; transform: scale(1); animation: taskPop .35s var(--ease); }
+    @keyframes taskPop {
+      0% { transform: scale(0.7) translateY(8px); opacity: 0; }
+      60% { transform: scale(1.08) translateY(-2px); }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
     .window {
       position: fixed;
       width: min(600px, calc(100vw - 16px));
       max-height: calc(100vh - 120px);
-      background: rgba(20,20,20,0.35);
-      border-radius: 14px;
-      box-shadow: 0 8px 32px 0 rgba(0,0,0,0.35);
+      background: var(--glass);
+      border-radius: 16px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
       z-index: 18;
-      border: 1.5px solid rgba(255,255,255,0.08);
-      -webkit-backdrop-filter: blur(10px) saturate(120%);
-      backdrop-filter: blur(10px) saturate(120%);
+      border: 1px solid var(--line);
+      -webkit-backdrop-filter: blur(18px) saturate(130%);
+      backdrop-filter: blur(18px) saturate(130%);
       display: none;
       overflow: hidden;
       opacity: 0;
-      transform: scale(0.96) translateY(8px);
-      transition: opacity .18s cubic-bezier(.22,.61,.36,1), transform .18s cubic-bezier(.22,.61,.36,1);
-      will-change: transform, opacity;
+      transform: scale(0.94) translateY(16px);
+      filter: blur(4px);
+      transition: opacity .28s var(--ease), transform .28s var(--ease), border-color .2s, box-shadow .2s, filter .28s var(--ease);
+      will-change: transform, opacity, filter;
     }
     
     #terminal-window {
       width: min(800px, calc(100vw - 16px));
+      background: rgba(0,0,0,0.88);
     }
-    .window.visible { opacity: 1; transform: scale(1) translateY(0); }
+    #spotify-window {
+      background: rgba(0,0,0,0.82);
+    }
+    #about-window {
+      background: var(--glass-strong);
+    }
+    .window.visible {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      filter: blur(0);
+    }
+    .window.closing {
+      opacity: 0;
+      transform: scale(0.96) translateY(10px);
+      filter: blur(3px);
+    }
+    .window.focused {
+      border-color: var(--line-hot);
+      box-shadow: 0 20px 56px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+      z-index: 19;
+    }
     .window-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 4px 8px;
+      padding: 8px 10px;
       font-weight: 700;
       letter-spacing: 0.03em;
       user-select: none;
       cursor: move;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
     }
     .window-body {
       padding: 16px;
       box-sizing: border-box;
     }
-    .close-btn {
+    .close-btn, .minimize-btn {
       background: none;
       border: none;
-      color: #fff;
-      font-size: 14px;
-      width: 24px;
-      height: 24px;
+      color: #bbb;
+      font-size: 13px;
+      width: 26px;
+      height: 26px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
+      transition: background .15s, color .15s;
     }
-    .close-btn:hover { background: rgba(255,255,255,0.08); }
-    .minimize-btn {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 14px;
-      width: 24px;
-      height: 24px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      cursor: pointer;
-      padding-bottom: 3px;
-    }
-    .minimize-btn:hover { background: rgba(255,255,255,0.08); }
+    .close-btn:hover { background: rgba(255,80,80,0.18); color: #fff; }
+    .minimize-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .minimize-btn { padding-bottom: 3px; }
     #notepad-text {
       width: 100%;
       height: 380px;
-      background: rgba(17,17,17,0.35);
+      background: rgba(10,10,10,0.45);
       color: #fff;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
       outline: none;
-      padding: 10px;
-      font-family: monospace;
-      font-size: 14px;
+      padding: 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
       resize: none;
       box-sizing: border-box;
     }
@@ -242,12 +288,12 @@
       flex: 1;
       overflow-y: auto;
       background: #000;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
       padding: 14px;
-      font-family: 'Courier New', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 13px;
-      line-height: 1.6;
+      line-height: 1.65;
       color: #ccc;
       scrollbar-width: thin;
       scrollbar-color: rgba(255,255,255,0.2) transparent;
@@ -271,30 +317,157 @@
       margin-left: 1px;
     }
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-    #terminal-window { background: #000; }
+
+    .project-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: #fff;
+      background: rgba(255,255,255,0.04);
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: background .2s, border-color .2s, transform .2s;
+    }
+    .project-link:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.16);
+      transform: translateY(-1px);
+    }
+    .project-link img {
+      width: 96px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: contain;
+      filter: grayscale(1);
+    }
+    .project-link span {
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+
+    .player-cover {
+      width: 100%;
+      height: 120px;
+      border-radius: 10px;
+      overflow: hidden;
+      filter: grayscale(1) contrast(0.95);
+      position: relative;
+    }
+    .player-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .4s var(--ease);
+    }
+    .player-cover.playing img {
+      animation: coverPulse 3.5s ease-in-out infinite;
+    }
+    .player-cover::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.45));
+      pointer-events: none;
+    }
+    @keyframes coverPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    .player-meta { width: 100%; text-align: center; line-height: 1.35; }
+    .player-meta .artist { font-weight: 700; font-size: 14px; letter-spacing: 0.02em; }
+    .player-meta .track { font-size: 11px; color: #888; margin-top: 2px; }
+    .player-controls {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .player-controls button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: background .15s;
+    }
+    .player-controls button:hover { background: rgba(255,255,255,0.08); }
+    .seek-wrap { width: 100%; }
+    .seek-bar {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.12);
+      outline: none;
+    }
+    .seek-bar::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+    }
+    .seek-times {
+      display: flex;
+      justify-content: space-between;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: #777;
+      margin-top: 6px;
+    }
+    #audio-switch {
+      width: 100%;
+      background: none;
+      border: none;
+      color: #666;
+      cursor: pointer;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-weight: 700;
+      font-family: inherit;
+      transition: color 0.2s;
+    }
+    #audio-switch:hover { color: #ccc; }
 
     #profile-popup {
       position: fixed;
       display: none;
       flex-direction: column;
       align-items: center;
-      min-width: 260px;
-      background: rgba(20,20,20,0.30);
-      border-radius: 18px;
-      box-shadow: 0 8px 32px 0 rgba(0,0,0,0.25);
-      padding: 32px 28px 24px 28px;
+      gap: 8px;
+      min-width: 220px;
+      max-width: 280px;
+      background: var(--glass-strong);
+      border-radius: 16px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.4);
+      padding: 18px 18px 16px;
       z-index: 100;
-      border: 1.5px solid rgba(255,255,255,0.12);
+      border: 1px solid var(--line);
       opacity: 0;
       transform: scale(0.96) translate3d(0, 8px, 0);
       transition: opacity .18s cubic-bezier(.22,.61,.36,1), transform .18s cubic-bezier(.22,.61,.36,1);
-      -webkit-backdrop-filter: blur(12px) saturate(120%);
-      backdrop-filter: blur(12px) saturate(120%);
+      -webkit-backdrop-filter: blur(16px) saturate(130%);
+      backdrop-filter: blur(16px) saturate(130%);
       will-change: transform, opacity;
       backface-visibility: hidden;
       contain: layout paint;
-      bottom: 72px;
-      left: 80px;
+      bottom: 68px;
+      left: 16px;
       right: auto;
     }
     #profile-popup.popup-visible { opacity: 1; transform: scale(1) translate3d(0, 0, 0); }
@@ -303,66 +476,84 @@
       100% { opacity: 1; transform: scale(1) translateY(0);}
     }
     #profile-popup .pfp {
-      width: 72px;
-      height: 72px;
+      width: 64px;
+      height: 64px;
       border-radius: 50%;
-      margin-bottom: 12px;
-      border: 2.5px solid #fff;
-      box-shadow: 0 2px 12px 0 rgba(0,0,0,0.18);
-      background: #222;
+      margin: 0 0 2px;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      box-shadow: 0 0 12px rgba(255,255,255,0.1);
+      background: #111;
       object-fit: cover;
-      filter: grayscale(1);
-      transition: filter 0.3s;
+      filter: none;
     }
     #profile-popup .name {
-      font-size: 20px;
+      font-size: 16px;
       font-weight: 700;
       color: #fff;
-      margin-bottom: 4px;
+      margin: 0;
       text-align: center;
       letter-spacing: 0.03em;
       text-shadow: 0 2px 8px #000;
+      line-height: 1.2;
     }
     #profile-popup .status {
-      font-size: 14px;
-      color: #bbb;
-      margin-bottom: 10px;
-      text-align: left;
-      min-height: 18px;
+      font-size: 12px;
+      color: #aaa;
+      margin: 0;
+      text-align: center;
+      min-height: 0;
       letter-spacing: 0.02em;
       text-shadow: 0 1px 4px #000;
       display: flex;
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
       gap: 4px;
+      width: 100%;
     }
     #profile-popup .status-row {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
     }
     #profile-popup .status-dot {
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       display: inline-block;
-      margin-right: 4px;
+      margin-right: 0;
       background: #bbb;
       box-shadow: 0 1px 4px 0 rgba(0,0,0,0.18);
       animation: statusPulse 1.2s infinite alternate cubic-bezier(.77,0,.18,1);
+      flex-shrink: 0;
     }
     @keyframes statusPulse {
       0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.12);}
       100% { box-shadow: 0 0 8px 4px rgba(255,255,255,0.18);}
     }
     #profile-popup .custom-text {
-      font-size: 15px;
-      color: #fff;
-      margin-bottom: 16px;
+      font-size: 12px;
+      color: #888;
+      margin: 2px 0 0;
       text-align: center;
-      letter-spacing: 0.01em;
-      min-height: 18px;
-      opacity: 0.8;
+      letter-spacing: 0.02em;
+      min-height: 0;
+      opacity: 0.9;
+      line-height: 1.35;
+    }
+    #profile-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      min-width: 0;
+    }
+    #profile-group .profile-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+      line-height: 1.15;
     }
     .window-header span { 
       display: block; 
@@ -374,24 +565,21 @@
 
     #panel {
       position: fixed;
-      left: 8px; right: 8px; bottom: 8px;
-      height: 44px;
-      background: rgba(20,20,20,0.7);
-      border: 1.5px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      box-shadow: 0 -2px 16px 0 rgba(0,0,0,0.18);
+      left: 10px; right: 10px; bottom: 10px;
+      height: 48px;
+      background: var(--glass-strong);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 -4px 28px rgba(0,0,0,0.35);
       display: flex;
       align-items: center;
       justify-content: space-between;
       z-index: 20;
-      padding: 0 24px;
-      animation: panelIn 1.1s cubic-bezier(.77,0,.18,1);
-      -webkit-backdrop-filter: blur(8px) saturate(120%);
-      backdrop-filter: blur(8px) saturate(120%);
-    }
-    @keyframes panelIn {
-      0% { opacity: 0; transform: translateY(48px);}
-      100% { opacity: 1; transform: translateY(0);}
+      padding: 0 16px;
+      -webkit-backdrop-filter: blur(16px) saturate(130%);
+      backdrop-filter: blur(16px) saturate(130%);
+      opacity: 1;
+      transform: translateY(0);
     }
     #panel .left {
       display: flex;
@@ -401,7 +589,7 @@
     #panel .right {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 14px;
     }
     .views {
       font-size: 11px;
@@ -411,29 +599,70 @@
       font-weight: 600;
       display: inline-flex;
       align-items: center;
+      font-family: 'IBM Plex Mono', monospace;
     }
     #profile-pic {
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      border: 2px solid #fff;
+      border: 1.5px solid rgba(255,255,255,0.45);
       object-fit: cover;
-      background: #222;
-      filter: grayscale(1);
-      transition: filter 0.3s;
+      background: #000;
+      filter: none;
+      transition: filter 0.3s, transform .2s, box-shadow .2s;
       cursor: pointer;
-      box-shadow: 0 1px 6px 0 rgba(0,0,0,0.12);
+      box-shadow: 0 0 10px rgba(255,255,255,0.12);
     }
-    #profile-pic:hover { filter: grayscale(1) brightness(1); }
+    #profile-pic:hover { transform: scale(1.05); box-shadow: 0 0 14px rgba(255,255,255,0.2); }
     #profile-name {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       color: #fff;
       letter-spacing: 0.02em;
       text-shadow: 0 1px 4px #000;
-      margin-right: 8px;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 140px;
     }
-    .clock { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: 0.04em; text-shadow: 0 2px 8px #000; min-width: 80px; text-align: right; }
+    .clock-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      line-height: 1.15;
+      min-width: 72px;
+    }
+    .clock {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.04em;
+      text-shadow: 0 2px 8px #000;
+      font-family: 'IBM Plex Mono', monospace;
+      animation: clockTick 1s steps(1) infinite;
+    }
+    @keyframes clockTick {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0.82; }
+    }
+    .clock-date {
+      font-size: 10px;
+      color: #777;
+      letter-spacing: 0.06em;
+      font-family: 'IBM Plex Mono', monospace;
+    }
+    #typing-status {
+      animation: statusFade 4s ease-in-out infinite;
+    }
+    @keyframes statusFade {
+      0%, 100% { opacity: 0.55; }
+      50% { opacity: 1; }
+    }
+    @keyframes aboutFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
 
     @media (max-width: 700px) {
       #icons {
@@ -468,7 +697,8 @@
       #notepad-text { height: calc(100vh - 140px); }
       #about-window { width: calc(100vw - 16px) !important; max-width: 280px; left: calc(50% - 140px) !important; }
       #spotify-window { width: 260px !important; left: calc(50% - 130px) !important; }
-      .clock { font-size: 14px; min-width: 70px; }
+      .clock { font-size: 13px; }
+      .clock-date { font-size: 9px; }
       .views { display: none; }
       #profile-name { font-size: 14px; margin-right: 4px; }
       #profile-pic { width: 28px; height: 28px; }
@@ -495,10 +725,14 @@
     }
     #about-window { width: 280px; }
     #about-window .about-pic {
-      width: 64px; height: 64px; border-radius: 50%;
-      object-fit: cover; filter: grayscale(1) contrast(1.2);
-      border: 2px solid rgba(255,255,255,0.08);
+      width: 72px; height: 72px; border-radius: 50%;
+      object-fit: cover;
+      filter: none;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      box-shadow: 0 0 12px rgba(255,255,255,0.12);
       margin-bottom: 10px;
+      background: #000;
+      animation: aboutFloat 4s ease-in-out infinite;
     }
     #about-window .about-name {
       font-size: 18px; font-weight: 700; color: #fff;
@@ -541,7 +775,8 @@
 </head>
 <body>
   <div id="custom-cursor"><img src="./assets/cursor.gif" alt=""></div>
-  <img id="wallpaper" src="./assets/wallpaper/DCA3UhDIVf.jpg">
+  <img id="wallpaper" src="./assets/wallpaper/DCA3UhDIVf.jpg" alt="">
+  <div id="vignette"></div>
   <canvas id="snow-canvas"></canvas>
   <noscript>
     <style>body{background:#111;color:#fff;font-family:monospace;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;}</style>
@@ -556,7 +791,7 @@
       </div>
     </template>
     
-    <div id="notepad-window" class="window" style="left: 80px; top: 100px; background: rgba(15,15,15,0.3);">
+    <div id="notepad-window" class="window" style="left: 80px; top: 100px;">
       <div class="window-header" id="notepad-drag">
         <span>unsaved document 1</span>
         <div style="display:flex; align-items:center; gap:2px;">
@@ -568,9 +803,9 @@
         <textarea id="notepad-text" placeholder=" " autocomplete="off" spellcheck="false"></textarea>
       </div>
     </div>
-    <div id="terminal-window" class="window" style="left: 520px; top: 140px; background: rgba(15,15,15,0.3);">
+    <div id="terminal-window" class="window" style="left: 520px; top: 140px;">
       <div class="window-header" id="terminal-drag">
-        <span>7896789678@komi.lol:~</span>
+        <span>7896789678@komi.wtf:~</span>
         <div style="display:flex; align-items:center; gap:2px;">
           <button class="minimize-btn" id="terminal-min">─</button>
           <button class="close-btn" id="terminal-close">✕</button>
@@ -580,7 +815,7 @@
         <div id="terminal-output" tabindex="0"></div>
       </div>
     </div>
-    <div id="projects-window" class="window" style="left: 200px; top: 200px; background: rgba(15,15,15,0.3);">
+    <div id="projects-window" class="window" style="left: 200px; top: 200px;">
       <div class="window-header" id="projects-drag">
         <span>projects</span>
         <div style="display:flex; align-items:center; gap:2px;">
@@ -588,18 +823,18 @@
           <button class="close-btn" id="projects-close">✕</button>
         </div>
       </div>
-      <div class="window-body" id="projects-body" style="display:flex; flex-direction:column; gap:16px; padding:16px;">
-        <a href="https://discord.gg/sYkY5ZMHm" target="_blank" rel="noopener noreferrer" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff; background:rgba(255,255,255,0.05); padding:12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.08); transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
-          <img src="./assets/clarity-logo.png" style="width:96px; height:48px; border-radius:8px; object-fit:contain; filter:grayscale(1);">
-          <span style="font-weight:700; letter-spacing:0.02em;">clarity.su</span>
+      <div class="window-body" id="projects-body" style="display:flex; flex-direction:column; gap:12px; padding:16px;">
+        <a class="project-link" href="https://discord.gg/sYkY5ZMHm" target="_blank" rel="noopener noreferrer">
+          <img src="./assets/clarity-logo.png" alt="">
+          <span>clarity.su</span>
         </a>
-        <a href="https://discord.gg/sYkY5ZMHm" target="_blank" rel="noopener noreferrer" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff; background:rgba(255,255,255,0.05); padding:12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.08); transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'">
-          <img src="./assets/spotify-reader.png" style="width:96px; height:48px; border-radius:8px; object-fit:contain; filter:grayscale(1);">
-          <span style="font-weight:700; letter-spacing:0.02em;">external spotify reader</span>
+        <a class="project-link" href="https://discord.gg/sYkY5ZMHm" target="_blank" rel="noopener noreferrer">
+          <img src="./assets/spotify-reader.png" alt="">
+          <span>external spotify reader</span>
         </a>
       </div>
     </div>
-    <div id="spotify-window" class="window" style="left: 50%; top: 10px; background: #000; width: 280px;">
+    <div id="spotify-window" class="window" style="left: 50%; top: 10px; width: 280px;">
       <div class="window-header" id="spotify-drag">
         <span>mp3 player</span>
         <div style="display:flex; align-items:center; gap:2px;">
@@ -607,33 +842,36 @@
           <button class="close-btn" id="spotify-close">✕</button>
         </div>
       </div>
-      <div class="window-body" style="padding:10px; display:flex; flex-direction:column; gap:8px; align-items:center;">
-        <div style="width:100%; height:75px; border-radius:8px; overflow:hidden; filter:grayscale(1) contrast(0.9);">
-          <img id="komi-cover" src="./assets/album-art.jpg" style="width:100%; height:100%; object-fit:cover; display:block;">
+      <div class="window-body" style="padding:12px; display:flex; flex-direction:column; gap:10px; align-items:center;">
+        <div class="player-cover">
+          <img id="komi-cover" src="./assets/album-art.jpg" alt="">
         </div>
-        <div style="width:100%; text-align:center; line-height:1.3;">
-          <div id="komi-artist" style="font-weight:700; font-size:14px; letter-spacing:0.02em;">jaydes</div>
-          <div id="komi-title" style="font-size:11px; color:#888;">migraine</div>
+        <div class="player-meta">
+          <div class="artist" id="komi-artist">jaydes</div>
+          <div class="track" id="komi-title">migraine</div>
         </div>
-        <audio id="custom-audio" src="./assets/migraine.mp3" preload="metadata" autoplay style="display:none;"></audio>
-        <div style="width:100%; display:flex; align-items:center; gap:6px;">
-          <button id="audio-play" style="background:none; border:none; color:#fff; cursor:pointer; padding:2px; display:flex; align-items:center; justify-content:center;">
+        <audio id="custom-audio" src="./assets/migraine.mp3" preload="metadata" style="display:none;"></audio>
+        <div class="seek-wrap">
+          <input type="range" id="audio-seek" class="seek-bar" min="0" max="100" value="0" step="0.1">
+          <div class="seek-times"><span id="audio-cur">0:00</span><span id="audio-dur">0:00</span></div>
+        </div>
+        <div class="player-controls">
+          <button id="audio-play" type="button" aria-label="play">
             <svg id="audio-play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
             <svg id="audio-pause-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
           </button>
-          <button id="audio-mute" style="background:none; border:none; color:#fff; cursor:pointer; padding:2px; display:flex; align-items:center; justify-content:center;">
+          <button id="audio-mute" type="button" aria-label="mute">
             <svg id="audio-vol-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
             <svg id="audio-mute-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
           </button>
         </div>
-        <div style="width:100%; height:1px; background:rgba(255,255,255,0.06);"></div>
-        <button id="audio-switch" style="width:100%; background:none; border:none; color:#666; cursor:pointer; padding:2px; display:flex; align-items:center; justify-content:center; gap:4px; font-size:9px; letter-spacing:0.08em; text-transform:uppercase; font-weight:700; transition:color 0.2s;" onmouseover="this.style.color='#ccc'" onmouseout="this.style.color='#666'" title="switch track">
+        <button id="audio-switch" type="button" title="switch track">
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-          switch
+          switch track
         </button>
       </div>
     </div>
-    <div id="about-window" class="window" style="left: 300px; top: 220px; background: rgba(5,5,5,0.65); display:none;">
+    <div id="about-window" class="window" style="left: 300px; top: 220px; display:none;">
       <div class="window-header" id="about-drag">
         <span>about me</span>
         <div style="display:flex; align-items:center; gap:2px;">
@@ -642,7 +880,7 @@
         </div>
       </div>
       <div class="window-body" style="padding:18px; display:flex; flex-direction:column; align-items:center; text-align:center;">
-        <img class="about-pic" src="./assets/avatar1.png" alt="avatar">
+        <img class="about-pic" src="./assets/icons/about-avatar.png?v=4" alt="avatar">
         <div class="about-name" id="about-name">komi</div>
         <div class="about-tag">developer / dreamer</div>
         <div style="width:100%; text-align:left; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08);">
@@ -655,32 +893,35 @@
             <span>c++ lua html py</span>
           </div>
           <div class="about-row">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm0-14a6 6 0 1 0 6 6 6 6 0 0 0-6-6zm0 10a4 4 0 1 1 4-4 4 4 0 0 1-4 4z" opacity="0"/></svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
             <span>14yo</span>
           </div>
         </div>
       </div>
     </div>
     <div id="profile-popup">
-      <img class="pfp" src="" alt="pfp">
+      <img class="pfp" src="./assets/avatar.png" alt="pfp">
       <div class="name"></div>
       <div class="status"></div>
       <div class="custom-text"></div>
     </div>
     <div id="panel">
       <div class="left">
-        <div id="profile-group" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-        <img id="profile-pic" src="./assets/avatar.png">
-        <div style="display:flex; flex-direction:column; gap:2px;">
-          <span id="profile-name">7896789678</span>
-          <span id="typing-status" style="font-size:10px; color:#888; letter-spacing:0.03em; font-weight:600; text-shadow:0 1px 4px #000; min-height:14px;"></span>
-        </div>
+        <div id="profile-group">
+          <img id="profile-pic" src="./assets/avatar.png" alt="">
+          <div class="profile-meta">
+            <span id="profile-name">7896789678</span>
+            <span id="typing-status" style="font-size:10px; color:#888; letter-spacing:0.03em; font-weight:600; text-shadow:0 1px 4px #000; min-height:12px;"></span>
+          </div>
         </div>
       </div>
       <div class="tasks" id="tasks">
       </div>
       <div class="right">
-        <span class="clock"></span>
+        <div class="clock-wrap">
+          <span class="clock"></span>
+          <span class="clock-date"></span>
+        </div>
         <span class="views" id="view-counter">
           <svg id="view-eye" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:3px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           <span id="view-count-text"></span>
@@ -698,17 +939,18 @@
       const cc = document.getElementById('custom-cursor');
       if (cc) cc.style.display = 'none';
     }
+
     const defaultProfilePic = "./assets/avatar.png";
     const defaultProfileName = "7896789678";
     const defaultWallpapers = [
       "./assets/wallpaper/DCA3UhDIVf.jpg"
     ];
     const defaultIcons = [
-      { img: "./assets/icons/VAtuAVJFG3.png", label: "xed", type: "notepad" },
-      { img: "./assets/icons/77Ai7oI52h.png", label: "kitty", type: "terminal" },
-      { img: "./assets/icons/KU2GZgmQXz.png", label: "mp3", type: "spotify" },
-      { img: "./assets/projects.png", label: "projects", type: "projects" },
-      { img: "./assets/avatar1.png", label: "about me", type: "about" },
+      { img: "./assets/icons/xed.png?v=3", label: "xed", type: "notepad" },
+      { img: "./assets/icons/kitty.png?v=3", label: "kitty", type: "terminal" },
+      { img: "./assets/icons/mp3.png?v=3", label: "mp3", type: "spotify" },
+      { img: "./assets/icons/projects.png?v=3", label: "projects", type: "projects" },
+      { img: "./assets/icons/about.png?v=3", label: "about me", type: "about" },
     ];
     function ensureTask(taskId, label, iconPath) {
       const bar = document.getElementById('tasks');
@@ -722,8 +964,10 @@
         iconImg.src = iconPath;
         iconImg.style.width = '16px';
         iconImg.style.height = '16px';
-        iconImg.style.filter = 'grayscale(1) contrast(1.2)';
+        iconImg.style.filter = 'none';
+        iconImg.style.background = '#000';
         iconImg.style.borderRadius = '4px';
+        iconImg.style.objectFit = 'contain';
         
         const labelText = document.createElement('span');
         labelText.textContent = label;
@@ -819,6 +1063,35 @@
         setTimeout(() => ctx.close(), 200);
       } catch (e) {}
     }
+    function bounceIcon(type) {
+      const el = document.querySelector('.icon-' + type);
+      if (!el) return;
+      el.classList.remove('icon-launch');
+      void el.offsetWidth;
+      el.classList.add('icon-launch');
+      setTimeout(() => el.classList.remove('icon-launch'), 450);
+    }
+    function openWindow(win) {
+      win.classList.remove('closing');
+      win.style.display = 'block';
+      centerElement(win);
+      bringToFront(win);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => win.classList.add('visible'));
+      });
+    }
+    function closeWindow(win, after) {
+      win.classList.remove('visible');
+      win.classList.add('closing');
+      setTimeout(() => {
+        win.style.display = 'none';
+        win.classList.remove('closing');
+        if (after) after();
+      }, 260);
+    }
+    function isWindowOpen(win) {
+      return win.style.display === 'block' && !win.classList.contains('closing');
+    }
     function makeDraggable(handleEl, moveEl) {
       let dragging = false;
       let startX = 0, startY = 0;
@@ -889,106 +1162,83 @@
     }
     function toggleNotepad() {
       const win = document.getElementById('notepad-window');
-      const isOpen = win.style.display === 'block';
-      if (isOpen) {
+      if (isWindowOpen(win)) {
         playClick('close');
-        win.classList.remove('visible');
-        setTimeout(() => { win.style.display = 'none'; }, 180);
-        hideTask('task-xed');
+        closeWindow(win, () => hideTask('task-xed'));
       } else {
         playClick('open');
-        win.style.display = 'block';
-        centerElement(win);
-        requestAnimationFrame(() => win.classList.add('visible'));
-        const task = ensureTask('task-xed', 'xed', './assets/icons/VAtuAVJFG3.png');
+        bounceIcon('notepad');
+        openWindow(win);
+        const task = ensureTask('task-xed', 'xed', './assets/icons/xed.png?v=3');
         task.onclick = toggleNotepad;
       }
     }
     function toggleTerminal() {
       const win = document.getElementById('terminal-window');
-      const wasOpen = win.style.display === 'block';
-      if (wasOpen) {
+      if (isWindowOpen(win)) {
         playClick('close');
-        win.classList.remove('visible');
-        setTimeout(() => { win.style.display = 'none'; }, 180);
-        hideTask('task-kitty');
+        closeWindow(win, () => hideTask('task-kitty'));
       } else {
         playClick('open');
-        win.style.display = 'block';
-        centerElement(win);
+        bounceIcon('terminal');
+        openWindow(win);
         const out = document.getElementById('terminal-output');
         out.focus();
-        requestAnimationFrame(() => win.classList.add('visible'));
-        const task = ensureTask('task-kitty', 'kitty', './assets/icons/77Ai7oI52h.png');
+        const task = ensureTask('task-kitty', 'kitty', './assets/icons/kitty.png?v=3');
         task.onclick = toggleTerminal;
       }
     }
     function toggleProjects() {
       const win = document.getElementById('projects-window');
-      const isOpen = win.style.display === 'block';
-      if (isOpen) {
+      if (isWindowOpen(win)) {
         playClick('close');
-        win.classList.remove('visible');
-        setTimeout(() => { win.style.display = 'none'; }, 180);
-        hideTask('task-projects');
+        closeWindow(win, () => hideTask('task-projects'));
       } else {
         playClick('open');
-        win.style.display = 'block';
-        centerElement(win);
-        requestAnimationFrame(() => win.classList.add('visible'));
-        const task = ensureTask('task-projects', 'projects', './assets/projects.png');
+        bounceIcon('projects');
+        openWindow(win);
+        const task = ensureTask('task-projects', 'projects', './assets/icons/projects.png?v=3');
         task.onclick = toggleProjects;
       }
     }
     function toggleSpotify() {
       const win = document.getElementById('spotify-window');
-      const isOpen = win.style.display === 'block';
-      if (isOpen) {
+      if (isWindowOpen(win)) {
         playClick('close');
-        win.classList.remove('visible');
-        setTimeout(() => { win.style.display = 'none'; }, 180);
-        hideTask('task-mp3');
+        closeWindow(win, () => hideTask('task-mp3'));
       } else {
         playClick('open');
-        win.style.display = 'block';
-        centerElement(win);
-        requestAnimationFrame(() => win.classList.add('visible'));
-        const task = ensureTask('task-mp3', 'mp3', './assets/icons/KU2GZgmQXz.png');
+        bounceIcon('spotify');
+        openWindow(win);
+        const task = ensureTask('task-mp3', 'mp3', './assets/icons/mp3.png?v=3');
         task.onclick = toggleSpotify;
       }
     }
     function toggleAbout() {
       const win = document.getElementById('about-window');
-      const isOpen = win.style.display === 'block';
-      if (isOpen) {
+      if (isWindowOpen(win)) {
         playClick('close');
-        win.classList.remove('visible');
-        setTimeout(() => { win.style.display = 'none'; }, 180);
-        hideTask('task-about');
+        if (glitchTimer) { clearTimeout(glitchTimer); glitchTimer = null; }
+        closeWindow(win, () => hideTask('task-about'));
       } else {
         playClick('open');
-        win.style.display = 'block';
-        centerElement(win);
-        requestAnimationFrame(() => win.classList.add('visible'));
-        const task = ensureTask('task-about', 'about me', './assets/avatar1.png');
+        bounceIcon('about');
+        openWindow(win);
+        const task = ensureTask('task-about', 'about me', './assets/icons/about.png?v=3');
         task.onclick = toggleAbout;
         startGlitchName();
       }
     }
     function bringToFront(element) {
-      const windows = document.querySelectorAll('.window');
-      windows.forEach(win => {
-        if (win !== element) {
-          win.style.zIndex = '18';
-        }
+      document.querySelectorAll('.window').forEach(win => {
+        win.classList.toggle('focused', win === element);
+        win.style.zIndex = win === element ? '19' : '18';
       });
-      element.style.zIndex = '19';
     }
     function minimizeWindow(winId) {
       playClick('close');
       const win = document.getElementById(winId);
-      win.classList.remove('visible');
-      setTimeout(() => { win.style.display = 'none'; }, 180);
+      closeWindow(win);
     }
 
     function handleWindowClick(event) {
@@ -1017,6 +1267,22 @@
       document.getElementById('spotify-min').onclick = () => minimizeWindow('spotify-window');
       document.getElementById('about-close').onclick = toggleAbout;
       document.getElementById('about-min').onclick = () => minimizeWindow('about-window');
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        const focused = document.querySelector('.window.focused.visible') ||
+          [...document.querySelectorAll('.window.visible')].sort((a, b) => (+b.style.zIndex || 0) - (+a.style.zIndex || 0))[0];
+        if (!focused) return;
+        const map = {
+          'notepad-window': toggleNotepad,
+          'terminal-window': toggleTerminal,
+          'projects-window': toggleProjects,
+          'spotify-window': toggleSpotify,
+          'about-window': toggleAbout
+        };
+        const fn = map[focused.id];
+        if (fn) fn();
+      });
 
       // Black snow effect
       (function() {
@@ -1073,6 +1339,9 @@
       const muteBtn = document.getElementById('audio-mute');
       const volIcon = document.getElementById('audio-vol-icon');
       const muteIcon = document.getElementById('audio-mute-icon');
+      const seek = document.getElementById('audio-seek');
+      const curEl = document.getElementById('audio-cur');
+      const durEl = document.getElementById('audio-dur');
       const komiTracks = [
         { src: './assets/migraine.mp3', artist: 'jaydes', title: 'migraine', cover: './assets/album-art.jpg' },
         { src: './assets/sometimes.mp3', artist: 'sometimes', title: 'sometimes', cover: './assets/sometimes-cover.jpg' },
@@ -1083,13 +1352,29 @@
         { src: './assets/music/OGm2ETtWK6.mp3', artist: 'unknown', title: 'rainsnow', cover: './assets/album-art.jpg' }
       ];
       let komiTrackIdx = 0;
+      let seeking = false;
+
+      function fmtTime(s) {
+        if (!isFinite(s)) return '0:00';
+        const m = Math.floor(s / 60);
+        const sec = Math.floor(s % 60);
+        return m + ':' + String(sec).padStart(2, '0');
+      }
       
       playBtn.onclick = () => {
-        if (audio.paused) { audio.play(); }
+        if (audio.paused) { audio.play().catch(() => {}); }
         else { audio.pause(); }
       };
-      audio.onplay = () => { playIcon.style.display = 'none'; pauseIcon.style.display = 'block'; };
-      audio.onpause = () => { playIcon.style.display = 'block'; pauseIcon.style.display = 'none'; };
+      audio.onplay = () => {
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'block';
+        document.querySelector('.player-cover')?.classList.add('playing');
+      };
+      audio.onpause = () => {
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+        document.querySelector('.player-cover')?.classList.remove('playing');
+      };
       muteBtn.onclick = () => { audio.muted = !audio.muted; };
       audio.onvolumechange = () => {
         if (audio.muted || audio.volume === 0) {
@@ -1100,6 +1385,24 @@
           muteIcon.style.display = 'none';
         }
       };
+      audio.ontimeupdate = () => {
+        if (seeking || !audio.duration) return;
+        seek.value = (audio.currentTime / audio.duration) * 100;
+        curEl.textContent = fmtTime(audio.currentTime);
+      };
+      audio.onloadedmetadata = () => { durEl.textContent = fmtTime(audio.duration); };
+      seek.addEventListener('pointerdown', () => { seeking = true; });
+      const endSeek = () => {
+        if (!seeking) return;
+        if (audio.duration) audio.currentTime = (seek.value / 100) * audio.duration;
+        seeking = false;
+      };
+      seek.addEventListener('pointerup', endSeek);
+      seek.addEventListener('pointercancel', endSeek);
+      window.addEventListener('pointerup', endSeek);
+      seek.addEventListener('input', () => {
+        if (audio.duration) curEl.textContent = fmtTime((seek.value / 100) * audio.duration);
+      });
       document.getElementById('audio-switch').onclick = () => {
         komiTrackIdx = (komiTrackIdx + 1) % komiTracks.length;
         const t = komiTracks[komiTrackIdx];
@@ -1107,12 +1410,14 @@
         document.getElementById('komi-artist').textContent = t.artist;
         document.getElementById('komi-title').textContent = t.title;
         document.getElementById('komi-cover').src = t.cover;
+        seek.value = 0;
+        curEl.textContent = '0:00';
         audio.play().catch(() => {});
       };
       
       const out = document.getElementById('terminal-output');
       const promptUser = '7896789678';
-      const promptHost = 'komi.lol';
+      const promptHost = 'komi.wtf';
       const promptPath = '~';
       let currentInput = '';
       let acceptingInput = true;
@@ -1191,7 +1496,13 @@ opsec is already the newest version (99.9).
           if (rest === 'apt install opsec') return commands['sudo apt install opsec']();
           return `sudo: ${rest.split(' ')[0]}: command not found`;
         },
-        discord: () => 'discord.gg/sYkY5ZMHm (copied to clipboard)',
+        discord: () => {
+          const invite = 'discord.gg/sYkY5ZMHm';
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(invite).catch(() => {});
+          }
+          return invite + ' (copied to clipboard)';
+        },
       };
       resetTerminal();
       appendText('type "help" for available commands');
@@ -1300,9 +1611,11 @@ opsec is already the newest version (99.9).
 
     function updateClock() {
       const now = new Date();
-      const optionsTime = { hour: 'numeric', minute: '2-digit', hour12: true };
-      const timeStr = new Intl.DateTimeFormat('en-US', optionsTime).format(now);
+      const timeStr = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }).format(now);
+      const dateStr = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).format(now);
       document.querySelector('.clock').textContent = timeStr.toLowerCase();
+      const dateEl = document.querySelector('.clock-date');
+      if (dateEl) dateEl.textContent = dateStr.toLowerCase();
     }
     setInterval(updateClock, 1000);
     updateClock();
@@ -1402,6 +1715,12 @@ opsec is already the newest version (99.9).
         hideProfilePopup();
       }
     });
+    function discordAvatarUrl(user, size) {
+      if (!user || !user.id || !user.avatar) return defaultProfilePic;
+      const s = size || 128;
+      const ext = user.avatar.startsWith('a_') ? 'gif' : 'png';
+      return `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.${ext}?size=${s}`;
+    }
     function fetchLanyard() {
       const popup = document.getElementById('profile-popup');
       const pfp = popup.querySelector('.pfp');
@@ -1411,6 +1730,7 @@ opsec is already the newest version (99.9).
       const panelPfp = document.getElementById('profile-pic');
       const panelName = document.getElementById('profile-name');
       pfp.src = defaultProfilePic;
+      panelPfp.src = defaultProfilePic;
       name.textContent = defaultProfileName;
       status.innerHTML = "";
       ctext.textContent = customText || "right click :D";
@@ -1420,7 +1740,14 @@ opsec is already the newest version (99.9).
         .then(data => {
           if (data && data.success && data.data) {
             const d = data.data;
-            const st = d.discord_status;
+            const user = d.discord_user || {};
+            const avatarUrl = discordAvatarUrl(user, 128);
+            pfp.src = avatarUrl;
+            panelPfp.src = avatarUrl;
+            const displayName = user.global_name || user.username || defaultProfileName;
+            name.textContent = displayName;
+            if (user.username) panelName.textContent = user.username;
+            const st = d.discord_status || 'offline';
             status.innerHTML = "";
             const row = document.createElement('div');
             row.className = "status-row";
@@ -1438,28 +1765,27 @@ opsec is already the newest version (99.9).
               const custom = d.activities.find(a => a.type === 4);
               if (custom && custom.state) {
                 const cs = document.createElement('div');
-                cs.style.fontSize = '13px';
-                cs.style.opacity = '0.8';
+                cs.style.fontSize = '12px';
+                cs.style.opacity = '0.85';
                 cs.textContent = custom.emoji && custom.emoji.name ? `${custom.emoji.name} ${custom.state}` : custom.state;
                 status.appendChild(cs);
               }
               const game = d.activities.find(a => a.type === 0);
               if (game) {
                 const actEl = document.createElement('div');
-                actEl.style.fontSize = '13px';
-                actEl.style.opacity = '0.8';
+                actEl.style.fontSize = '12px';
+                actEl.style.opacity = '0.85';
                 actEl.textContent = `Playing ${game.name}`;
                 status.appendChild(actEl);
               }
             }
             if (d.spotify && d.spotify.track_id) {
               const sp = document.createElement('div');
-              sp.style.fontSize = '13px';
-              sp.style.opacity = '0.8';
+              sp.style.fontSize = '12px';
+              sp.style.opacity = '0.85';
               sp.textContent = `Listening to ${d.spotify.song} — ${d.spotify.artist}`;
               status.appendChild(sp);
             }
-            renderIcons();
           }
         })
         .catch(err => {
