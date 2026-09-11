@@ -896,7 +896,7 @@
         </div>
       </div>
       <div class="window-body" style="padding:18px; display:flex; flex-direction:column; align-items:center; text-align:center;">
-        <img class="about-pic" src="./assets/icons/about-avatar.png?v=4" alt="avatar">
+        <img class="about-pic" id="about-pic" src="./assets/avatar.png" alt="avatar">
         <div class="about-name" id="about-name">komi</div>
         <div class="about-tag">developer / dreamer</div>
         <div style="width:100%; text-align:left; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08);">
@@ -1745,8 +1745,10 @@ opsec is already the newest version (99.9).
       const ctext = popup.querySelector('.custom-text');
       const panelPfp = document.getElementById('profile-pic');
       const panelName = document.getElementById('profile-name');
+      const aboutPic = document.getElementById('about-pic');
       pfp.src = defaultProfilePic;
       panelPfp.src = defaultProfilePic;
+      if (aboutPic) aboutPic.src = defaultProfilePic;
       name.textContent = defaultProfileName;
       status.innerHTML = "";
       ctext.textContent = customText || "right click :D";
@@ -1757,9 +1759,10 @@ opsec is already the newest version (99.9).
           if (data && data.success && data.data) {
             const d = data.data;
             const user = d.discord_user || {};
-            const avatarUrl = discordAvatarUrl(user, 128);
+            const avatarUrl = discordAvatarUrl(user, 256);
             pfp.src = avatarUrl;
             panelPfp.src = avatarUrl;
+            if (aboutPic) aboutPic.src = avatarUrl;
             const displayName = user.global_name || user.username || defaultProfileName;
             name.textContent = displayName;
             if (user.username) panelName.textContent = user.username;
